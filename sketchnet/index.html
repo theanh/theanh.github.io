@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>A Sketch Recognition Learning Journey, by The Anh Nguyen</title>
-  <meta name="description" content="Training a CNN to recognise hand-drawn sketches. Four turning points from 90.5% to 95.1% accuracy, 8 hours to 31 minutes of training, and 34 MB to 938 KB on disk.">
+  <meta name="description" content="Training a CNN to recognise hand-drawn sketches. Four turning points from 90.5% to 95.1% accuracy, 8 hours to 84 minutes of training, and 34 MB to 938 KB on disk.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -229,7 +229,7 @@
     }
     .callout p { margin-bottom: 0.7rem; }
     .callout p:last-child { margin-bottom: 0; }
-    .callout strong:first-child {
+    .callout > strong:first-of-type {
       font-family: var(--font-display);
       font-size: 0.78rem;
       font-weight: 600;
@@ -433,20 +433,20 @@
       </svg>
       The Anh Nguyen
     </a>
-    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Try the live app →</a>
+    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Try the live app -></a>
   </div>
 </header>
 
 <article class="essay">
 
   <header class="essay-header">
-    <p class="kicker">Field notes · Machine learning · April 2026</p>
+    <p class="kicker">Field notes - Machine learning - April 2026</p>
     <h1>A Sketch Recognition Learning Journey</h1>
     <p class="standfirst">
       Training a convolutional neural network to recognise hand-drawn sketches.
       Four turning points that changed everything.
     </p>
-    <p class="byline">By The Anh Nguyen · CNN from scratch · 25 classes · Quick Draw + TU Berlin</p>
+    <p class="byline">By The Anh Nguyen - CNN from scratch - 25 classes - Quick Draw + TU Berlin</p>
   </header>
 
   <div class="metrics" aria-label="Headline results">
@@ -457,7 +457,7 @@
     </div>
     <div class="metric">
       <div class="metric-from">8 hours</div>
-      <div class="metric-to">31 min</div>
+      <div class="metric-to">84 min</div>
       <div class="metric-label">training time</div>
     </div>
     <div class="metric">
@@ -500,22 +500,22 @@
       <rect x="75"  y="170" width="80" height="70" rx="2" fill="#ffd139" opacity="0.65"/>
       <text x="115" y="166" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">90.5%</text>
       <text x="115" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">Baseline</text>
-      <text x="115" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px · 1.6 MB</text>
+      <text x="115" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px - 1.6 MB</text>
 
       <rect x="210" y="115" width="80" height="125" rx="2" fill="#ffd139" opacity="0.75"/>
       <text x="250" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">92.6%</text>
       <text x="250" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">Ceiling</text>
-      <text x="250" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px · best</text>
+      <text x="250" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px - best</text>
 
       <rect x="345" y="59" width="80" height="181" rx="2" fill="#ffd139"/>
       <text x="385" y="55" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">94.6%</text>
       <text x="385" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">128px</text>
-      <text x="385" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">8 h · 34 MB</text>
+      <text x="385" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">8 h - 34 MB</text>
 
       <rect x="480" y="39" width="80" height="201" rx="2" fill="#ffd139"/>
       <text x="520" y="35" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">95.3%</text>
       <text x="520" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">sync fix</text>
-      <text x="520" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">31 min · 34 MB</text>
+      <text x="520" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">31 min - 34 MB</text>
 
       <rect x="615" y="38" width="80" height="202" rx="2" fill="#ffd139"/>
       <text x="655" y="34" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">95.4%</text>
@@ -525,22 +525,24 @@
       <rect x="720" y="45" width="80" height="195" rx="2" fill="#2563eb" opacity="0.75"/>
       <text x="760" y="41" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1d4ed8">95.1%</text>
       <text x="760" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1d4ed8">Shipped</text>
-      <text x="760" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#1d4ed8">real world</text>
+      <text x="760" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#1d4ed8">+ domain aug</text>
 
       <line x1="54" y1="170" x2="820" y2="170" stroke="rgba(122,112,96,0.25)" stroke-width="1" stroke-dasharray="3,6"/>
       <text x="59" y="167" fill="#7a7060" font-family="JetBrains Mono" font-size="8" opacity="0.7">baseline</text>
     </svg>
     <figcaption id="chart-1-cap">
-      Each bar is a key milestone in the four-act journey. The blue bar on the right is the current shipping
-      model, evaluated on independent real-world drawings rather than the Quick Draw test set. The dashed red
-      line marks the 94.5% ship gate.
+      Each bar is a key milestone in the four-act journey, all measured on the Quick Draw test set.
+      The blue bar on the right is the current shipping model after the domain-matching augmentation
+      from Act IV: 0.28 percentage points lower on Quick Draw than the previous milestone, but
+      <strong>+23 percentage points</strong> on independent TU Berlin sketches (78.6% vs 55.3%).
+      The dashed red line marks the 94.5% ship gate.
     </figcaption>
   </figure>
 
   <div class="brushstroke-rule" aria-hidden="true"></div>
 
   <h2>I. The 28px Ceiling</h2>
-  <p class="dek">Baseline → best at 28 pixels</p>
+  <p class="dek">Baseline -> best at 28 pixels</p>
 
   <p>
     The obvious fix to the 92.6% plateau was to upscale the bitmaps to 64 pixels and give the model more
@@ -579,6 +581,67 @@
     upscaling attempt disappears entirely, because training and inference now use the same rendering
     pipeline.
   </p>
+
+  <figure class="chart" aria-labelledby="render-cap">
+    <svg viewBox="0 0 820 360" style="width:100%;height:auto" aria-label="Pre-rendered bitmap upscaling vs native stroke rendering">
+      <defs>
+        <filter id="bilinear-blur" x="-10%" y="-10%" width="120%" height="120%">
+          <feGaussianBlur stdDeviation="2.6"/>
+        </filter>
+        <filter id="panelframe" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="11" stitchTiles="stitch" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/>
+        </filter>
+      </defs>
+
+      <text x="170" y="22" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">PRE-RENDERED 28×28 BITMAP</text>
+      <text x="170" y="38" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">upscaled to 128×128 (bilinear)</text>
+
+      <text x="650" y="22" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">NDJSON STROKE COORDINATES</text>
+      <text x="650" y="38" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">rendered at 128×128 (cv2.polylines)</text>
+
+      <g transform="translate(50, 56)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g filter="url(#bilinear-blur)" fill="#1c1a14" transform="translate(-12, 0)">
+          <rect x="120" y="24" width="24" height="24"/>
+          <rect x="120" y="48" width="48" height="24"/>
+          <rect x="72" y="72" width="120" height="24"/>
+          <rect x="48" y="96" width="24" height="24"/>
+          <rect x="192" y="96" width="24" height="24"/>
+          <rect x="48" y="120" width="24" height="24"/>
+          <rect x="192" y="120" width="24" height="24"/>
+          <rect x="48" y="144" width="24" height="24"/>
+          <rect x="192" y="144" width="24" height="24"/>
+          <rect x="72" y="168" width="24" height="24"/>
+          <rect x="168" y="168" width="24" height="24"/>
+          <rect x="96" y="192" width="72" height="24"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#panelframe)"/>
+      </g>
+
+      <g transform="translate(530, 56)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g stroke="#1c1a14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(-12, 0)">
+          <path d="M 132 70 C 60 70, 50 200, 132 215 C 215 200, 200 70, 132 70 Z"/>
+          <line x1="132" y1="48" x2="132" y2="70"/>
+          <path d="M 138 56 Q 168 36, 178 64 Q 156 72, 138 56 Z"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#panelframe)"/>
+      </g>
+
+      <text x="170" y="320" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#dc2626" text-anchor="middle">BLURRY EDGES, FAKE TEXTURES</text>
+      <text x="650" y="320" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#16a34a" text-anchor="middle">SHARP LINES, MATCHES CANVAS</text>
+
+      <text x="170" y="345" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">low-resolution source, interpolated up</text>
+      <text x="650" y="345" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">vector source, rasterized at target size</text>
+    </svg>
+    <figcaption id="render-cap">
+      The same Quick Draw apple, two training pipelines. Pre-rasterized 28×28 bitmaps carry their
+      original aliasing into training and emerge blurry after bilinear upscaling. Native rendering
+      of the underlying stroke coordinates produces images with the same line quality as a live
+      canvas draw, eliminating the texture mismatch that killed the upscaling attempt.
+    </figcaption>
+  </figure>
 
   <p>
     The jump was immediate: accuracy went from 92.6% to <strong>94.6%</strong>, clearing the 28-pixel
@@ -622,48 +685,32 @@
   </p>
 
   <figure class="chart">
-    <div class="mini-pair">
+    <div class="mini-pair" style="grid-template-columns:1fr">
       <div>
         <p>Training time</p>
-        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Training time comparison">
+        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Training time across experiments">
           <rect x="100" y="10" width="240" height="22" rx="2" fill="#d97706" opacity="0.5"/>
-          <text x="96" y="25" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">128px · CPU</text>
+          <text x="96" y="25" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">128px - CPU</text>
           <text x="346" y="25" font-family="JetBrains Mono" font-size="9" fill="#d97706">8 h</text>
 
-          <rect x="100" y="42" width="42" height="22" rx="2" fill="#16a34a" opacity="0.65"/>
-          <text x="96" y="57" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">domain aug</text>
-          <text x="148" y="57" font-family="JetBrains Mono" font-size="9" fill="#16a34a">84 min  MPS GPU</text>
+          <rect x="100" y="42" width="16" height="22" rx="2" fill="#16a34a"/>
+          <text x="96" y="57" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">sync fix</text>
+          <text x="122" y="57" font-family="JetBrains Mono" font-size="9" fill="#16a34a">31 min  MPS GPU  <- speed breakthrough (15×)</text>
 
           <rect x="100" y="74" width="26" height="22" rx="2" fill="#16a34a" opacity="0.65"/>
           <text x="96" y="89" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">bottleneck</text>
           <text x="132" y="89" font-family="JetBrains Mono" font-size="9" fill="#16a34a">53 min  MPS GPU</text>
 
-          <rect x="100" y="106" width="16" height="22" rx="2" fill="#16a34a"/>
-          <text x="96" y="121" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">sync fix</text>
-          <text x="122" y="121" font-family="JetBrains Mono" font-size="9" fill="#16a34a">31 min  MPS GPU  ← breakthrough</text>
-        </svg>
-      </div>
-      <div>
-        <p>Model file size</p>
-        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Model size comparison">
-          <rect x="100" y="10" width="260" height="30" rx="2" fill="#d97706" opacity="0.45"/>
-          <text x="96" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">FP32 model</text>
-          <text x="366" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#d97706">34 MB</text>
-
-          <rect x="100" y="56" width="36" height="22" rx="2" fill="#ffd139" opacity="0.85"/>
-          <text x="96" y="71" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">bottleneck FP32</text>
-          <text x="142" y="71" font-family="JetBrains Mono" font-size="9" fill="#78600a">3.75 MB</text>
-
-          <rect x="100" y="90" width="9" height="22" rx="2" fill="#16a34a"/>
-          <text x="96" y="105" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">INT8 quantized</text>
-          <text x="115" y="105" font-family="JetBrains Mono" font-size="9" fill="#16a34a">938 KB  ← 97% smaller than original</text>
+          <rect x="100" y="106" width="42" height="22" rx="2" fill="#16a34a" opacity="0.65"/>
+          <text x="96" y="121" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">domain aug</text>
+          <text x="148" y="121" font-family="JetBrains Mono" font-size="9" fill="#16a34a">84 min  MPS GPU  <- current shipping</text>
         </svg>
       </div>
     </div>
     <figcaption>
-      Speed and size, before and after. The training time chart is dominated by the original 8-hour
-      CPU baseline. The model size chart shows the 34 MB → 938 KB compression, achieved through a 1×1
-      convolution bottleneck and post-training INT8 quantization.
+      Speed across the journey, top to bottom in chronological order. The sync fix delivers the
+      15× breakthrough (8 h -> 31 min). Adding the 1×1 bottleneck and then the wobble/morphology
+      augmentation traded some of that win back, ending at 84 minutes for the current shipping run.
     </figcaption>
   </figure>
 
@@ -692,12 +739,168 @@
     sides. GAP averages all positions and destroys that information.
   </p>
 
+  <figure class="chart" aria-labelledby="head-cap">
+    <svg viewBox="0 0 700 510" style="width:100%;height:auto" aria-label="Global Average Pooling vs 1x1 convolution bottleneck">
+      <defs>
+        <filter id="head-frame" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="13" stitchTiles="stitch" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/>
+        </filter>
+      </defs>
+
+      <text x="350" y="20" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">DEEP FEATURE MAP - 8×8 SPATIAL × 256 CHANNELS</text>
+      <text x="350" y="38" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">example: a 'sun' channel - bright center, radial spokes, dim corners</text>
+
+      <g transform="translate(286, 56)">
+        <rect x="0" y="0" width="128" height="128" fill="rgba(255,209,57,0.06)"/>
+        <g fill="#1c1a14">
+          <rect x="48" y="0" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="0" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="16" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="16" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="16" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="16" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="32" y="32" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="32" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="32" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="80" y="32" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="0" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="48" y="48" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="64" y="48" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="80" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="112" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="0" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="48" y="64" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="64" y="64" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="80" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="112" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="80" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="80" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="80" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="80" y="80" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="16" y="96" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="96" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="96" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="96" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="112" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="112" width="16" height="16" fill-opacity="0.85"/>
+        </g>
+        <rect x="0" y="0" width="128" height="128" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#head-frame)"/>
+      </g>
+
+      <text x="350" y="206" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">two ways to shrink it before the dense layer</text>
+      <path d="M 320 195 L 200 246" stroke="#7a7060" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+      <path d="M 380 195 L 500 246" stroke="#7a7060" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+
+      <text x="180" y="262" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#dc2626" text-anchor="middle" letter-spacing="0.08em">GLOBAL AVERAGE POOLING</text>
+      <text x="180" y="278" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">mean of all 64 positions per channel</text>
+
+      <g transform="translate(148, 296)">
+        <rect x="0" y="0" width="64" height="64" fill="rgba(255,209,57,0.06)"/>
+        <rect x="0" y="0" width="64" height="64" fill="#1c1a14" fill-opacity="0.34"/>
+        <rect x="0" y="0" width="64" height="64" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#head-frame)"/>
+      </g>
+
+      <text x="180" y="382" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">256 × 1 × 1 = 256 values</text>
+      <text x="180" y="430" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#dc2626" text-anchor="middle">"Is there a sun?" Yes, kind of.</text>
+      <text x="180" y="447" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#dc2626" text-anchor="middle">Where? Forgotten.</text>
+      <text x="180" y="478" font-family="JetBrains Mono" font-size="9" font-weight="500" fill="#dc2626" text-anchor="middle">SUN 69%, HEAD STUCK AT 91%</text>
+
+      <text x="520" y="262" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#16a34a" text-anchor="middle" letter-spacing="0.08em">1×1 CONVOLUTION BOTTLENECK</text>
+      <text x="520" y="278" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">256 -> 64 channels, spatial untouched</text>
+
+      <g transform="translate(456, 296)">
+        <rect x="0" y="0" width="128" height="128" fill="rgba(255,209,57,0.06)"/>
+        <g fill="#1c1a14">
+          <rect x="48" y="0" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="0" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="16" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="16" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="16" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="16" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="32" y="32" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="32" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="32" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="80" y="32" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="0" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="48" y="48" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="64" y="48" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="80" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="112" y="48" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="0" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="16" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="48" y="64" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="64" y="64" width="16" height="16" fill-opacity="1.0"/>
+          <rect x="80" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="112" y="64" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="32" y="80" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="80" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="80" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="80" y="80" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="16" y="96" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="96" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="96" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="96" y="96" width="16" height="16" fill-opacity="0.5"/>
+          <rect x="48" y="112" width="16" height="16" fill-opacity="0.85"/>
+          <rect x="64" y="112" width="16" height="16" fill-opacity="0.85"/>
+        </g>
+        <rect x="0" y="0" width="128" height="128" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#head-frame)"/>
+      </g>
+
+      <text x="520" y="446" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">64 × 8 × 8 = 4,096 values</text>
+      <text x="520" y="478" font-family="JetBrains Mono" font-size="9" font-weight="500" fill="#16a34a" text-anchor="middle">SPATIAL PATTERN KEPT, HEAD HITS 95.4%</text>
+    </svg>
+    <figcaption id="head-cap">
+      Same input feature map, two ways to feed it to the dense layer. GAP averages all 64 positions
+      per channel into one number, throwing away the spatial pattern that classes like sun (radial),
+      moon (crescent), and bird (lateral wings) depend on. The 1×1 bottleneck only shrinks the
+      channel dimension - the 8×8 grid passes through untouched, so "where each feature fires" is
+      preserved. Both methods deliver a fixed-size vector to the FC layer; only the bottleneck's
+      vector still carries spatial information.
+    </figcaption>
+  </figure>
+
   <p>
     A 1×1 convolution bottleneck worked where GAP failed. It reduces the 256 feature channels down to
     64 while keeping the 8×8 spatial grid completely intact. The fully connected layer then sees 4,096
     values instead of 16,384. Parameter count fell from 8.8 million to 933,000. File size went from
     34 MB to 3.75 MB. Accuracy stayed at 95.4%.
   </p>
+
+  <aside class="callout">
+    <svg class="callout-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" fill="none" stroke="#ffd139" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke" filter="url(#calloutframe)"/>
+    </svg>
+    <strong>The arithmetic</strong>
+    <p>
+      The 128×128 input image carries <strong>16,384 pixels</strong>. Four conv-pool blocks rearrange
+      those into an 8 × 8 × 256 = <strong>16,384-value</strong> deep feature map - same total, just
+      redistributed from many spatial positions and one channel into few positions and many channels.
+    </p>
+    <p>
+      Without a bottleneck, FC1 has to flatten that 8×8×256 grid and project it down to 512 units:
+      <code>16,384 × 512 ≈ 8.4 million</code> parameters in this single layer alone, more than 95%
+      of the entire model. Everything else - four conv blocks, batch norms, FC2 - was rounding error.
+    </p>
+    <p>
+      The 1×1 bottleneck inserts one cheap layer (<code>256 × 64 = 16K</code> parameters) that
+      compresses channel depth before the flatten. FC1 now projects 4,096 -> 128:
+      <code>4,096 × 128 ≈ 524K</code> parameters - a 16× cut on the layer that dominated the budget.
+      The conv stack is unchanged. Total model: 8.8M -> 933K parameters, a 9.4× shrink from one
+      architectural insertion.
+    </p>
+  </aside>
 
   <p>
     Post-training static quantization brought it the rest of the way. The process fuses each
@@ -707,6 +910,32 @@
     Result: 3.75 MB to <strong>938 KB</strong>. Accuracy: 95.35% before quantization,
     <strong>95.36% after</strong>. The quantization cost nothing.
   </p>
+
+  <figure class="chart">
+    <div class="mini-pair" style="grid-template-columns:1fr">
+      <div>
+        <p>Model file size</p>
+        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Model size comparison">
+          <rect x="100" y="10" width="260" height="30" rx="2" fill="#d97706" opacity="0.45"/>
+          <text x="96" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">FP32 model</text>
+          <text x="366" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#d97706">34 MB</text>
+
+          <rect x="100" y="56" width="36" height="22" rx="2" fill="#ffd139" opacity="0.85"/>
+          <text x="96" y="71" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">bottleneck FP32</text>
+          <text x="142" y="71" font-family="JetBrains Mono" font-size="9" fill="#78600a">3.75 MB</text>
+
+          <rect x="100" y="90" width="9" height="22" rx="2" fill="#16a34a"/>
+          <text x="96" y="105" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">INT8 quantized</text>
+          <text x="115" y="105" font-family="JetBrains Mono" font-size="9" fill="#16a34a">938 KB  <- 97% smaller than original</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption>
+      Size before and after. The 34 MB FP32 baseline shrinks to 3.75 MB after the 1×1 bottleneck
+      head, then to 938 KB after INT8 quantization - 97% smaller than the original, with no accuracy
+      cost.
+    </figcaption>
+  </figure>
 
   <div class="result-line">
     <div class="result-cell"><div class="result-num">95.36%</div><div class="result-tag">INT8 accuracy</div></div>
@@ -739,12 +968,131 @@
     pressure variation.
   </p>
 
+  <figure class="chart" aria-labelledby="aug-cap">
+    <svg viewBox="0 0 620 660" style="width:100%;height:auto" aria-label="Quick Draw clean vs wobble vs morphology vs both augmentations">
+      <defs>
+        <filter id="aug-wobble" x="-15%" y="-15%" width="130%" height="130%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="7" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="4"/>
+        </filter>
+        <filter id="aug-frame" x="-2%" y="-2%" width="104%" height="104%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="11" stitchTiles="stitch" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="2.4"/>
+        </filter>
+      </defs>
+
+      <text x="160" y="22" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">QUICK DRAW (CLEAN)</text>
+      <text x="160" y="38" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">as-is from NDJSON, single stroke width</text>
+
+      <text x="460" y="22" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">+ WOBBLE</text>
+      <text x="460" y="38" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">cumulative Gaussian, σ=1.2 px</text>
+
+      <g transform="translate(40, 50)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g stroke="#1c1a14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M 120 70 C 48 70, 38 200, 120 215 C 203 200, 188 70, 120 70 Z"/>
+          <line x1="120" y1="48" x2="120" y2="70"/>
+          <path d="M 126 56 Q 156 36, 166 64 Q 144 72, 126 56 Z"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#aug-frame)"/>
+      </g>
+
+      <g transform="translate(340, 50)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g stroke="#1c1a14" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#aug-wobble)">
+          <path d="M 120 70 C 48 70, 38 200, 120 215 C 203 200, 188 70, 120 70 Z"/>
+          <line x1="120" y1="48" x2="120" y2="70"/>
+          <path d="M 126 56 Q 156 36, 166 64 Q 144 72, 126 56 Z"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#aug-frame)"/>
+      </g>
+
+      <text x="160" y="312" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">too tidy - doesn't match real canvas</text>
+      <text x="460" y="312" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">simulates hand tremor</text>
+
+      <text x="160" y="350" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">+ MORPHOLOGY</text>
+      <text x="160" y="366" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">±1 px dilate / erode (p=0.3)</text>
+
+      <text x="460" y="350" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.08em">+ WOBBLE + MORPHOLOGY</text>
+      <text x="460" y="366" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" text-anchor="middle">current Exp H training data</text>
+
+      <g transform="translate(40, 378)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g stroke="#1c1a14" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none">
+          <path d="M 120 70 C 48 70, 38 200, 120 215 C 203 200, 188 70, 120 70 Z"/>
+          <line x1="120" y1="48" x2="120" y2="70"/>
+          <path d="M 126 56 Q 156 36, 166 64 Q 144 72, 126 56 Z"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#aug-frame)"/>
+      </g>
+
+      <g transform="translate(340, 378)">
+        <rect x="0" y="0" width="240" height="240" fill="rgba(255,209,57,0.06)"/>
+        <g stroke="#1c1a14" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#aug-wobble)">
+          <path d="M 120 70 C 48 70, 38 200, 120 215 C 203 200, 188 70, 120 70 Z"/>
+          <line x1="120" y1="48" x2="120" y2="70"/>
+          <path d="M 126 56 Q 156 36, 166 64 Q 144 72, 126 56 Z"/>
+        </g>
+        <rect x="0" y="0" width="240" height="240" fill="none" stroke="#ffd139" stroke-width="1.5" stroke-opacity="0.55" filter="url(#aug-frame)"/>
+      </g>
+
+      <text x="160" y="640" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">simulates pen-pressure variation</text>
+      <text x="460" y="640" font-family="Spectral, Georgia, serif" font-style="italic" font-size="11" fill="#7a7060" text-anchor="middle">closes the canvas distribution gap</text>
+    </svg>
+    <figcaption id="aug-cap">
+      The same Quick Draw apple under each step of the Exp H render-time augmentation. Clean strokes
+      (top-left) are too tidy to match what users actually draw. Wobble (top-right) adds the natural
+      micro-shake of a hand. Morphology (bottom-left, dilation shown; the real pipeline picks dilate
+      or erode 50/50) approximates pen-pressure variation. Combined (bottom-right) is what the model
+      now trains on - and it's why Exp H gained 23 percentage points on TU Berlin sketches even
+      though it lost 0.28pp on the cleaner Quick Draw test set.
+    </figcaption>
+  </figure>
+
   <p>
     On the Quick Draw test set, accuracy dropped from 95.36% to <strong>95.08%</strong>. That 0.28
     percentage point drop looked like a regression. On 1,760 independent tablet-drawn sketches from
     TU Berlin, accuracy went from 55.3% to <strong>78.6%</strong>, a 23 percentage point gain. Dog
     improved by 50 points. Butterfly by 42 points. Guitar by 42 points. The model that appeared to
     regress was the model that actually worked in the real world.
+  </p>
+
+  <p>
+    The trade-off looks asymmetric at the confusion-pair level. Wobble helped pairs where the
+    distinguishing feature was structurally robust to noise, and slightly hurt pairs where the
+    feature was already fragile at 128 px:
+  </p>
+
+  <table class="scorecard">
+    <thead>
+      <tr>
+        <th>Confusion pair (Quick Draw test set)</th>
+        <th>Exp G</th>
+        <th>Exp H</th>
+        <th>Δ</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>sun -> spider</td>
+        <td class="gate">138</td>
+        <td class="actual">98</td>
+        <td class="actual" style="color:var(--green)">−40 (−29%)</td>
+      </tr>
+      <tr>
+        <td>moon -> circle</td>
+        <td class="gate">227</td>
+        <td class="actual">239</td>
+        <td class="actual" style="color:var(--amber)">+12 (+5%)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    Sun's radial rays still read as radial when jittered, so wobble exposed the model to more
+    variants of the same structure. Moon's crescent at 128 px was already a borderline case
+    against a circle; wobble pushed a few more samples across that line. The Quick Draw dip is
+    the net of these opposing shifts - paid on some pairs to win on the broader distribution.
   </p>
 
   <aside class="callout">
@@ -768,7 +1116,7 @@
 
   <div class="brushstroke-rule" aria-hidden="true"></div>
 
-  <h2>What the experiments taught us</h2>
+  <h2>Lessons learned</h2>
 
   <ol class="lessons">
     <li>
@@ -831,7 +1179,7 @@
   </div>
 
   <p style="text-align:center;margin-top:1.4rem">
-    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Open the live app →</a>
+    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Open the live app -></a>
   </p>
 
   <div class="brushstroke-rule" aria-hidden="true"></div>
@@ -917,10 +1265,10 @@
       The Anh Nguyen
     </span>
     <span>
-      <a href="/">← Back to portfolio</a>
-      &nbsp;·&nbsp;
+      <a href="/"><- Back to portfolio</a>
+      &nbsp;-&nbsp;
       <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Live app</a>
-      &nbsp;·&nbsp;
+      &nbsp;-&nbsp;
       <a href="https://github.com/theanh">GitHub</a>
     </span>
   </div>

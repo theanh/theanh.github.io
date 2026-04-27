@@ -15,36 +15,42 @@
   </a>
 </p>
 
-**Focus areas:** `Backend Systems` · `Data Engineering at Scale` · `Cloud Architecture` · `Engineering Leadership`
+**Focus:** `AI Engineering` - `Agentic Systems` - `Data Engineering` - `Cloud Infrastructure` - `Backend Systems` - `Engineering Leadership`
 
-I'm a Technical Lead with 15+ years building data pipelines and backend systems. I care about solving real problems, not just shipping. That usually means digging into infrastructure costs, profiling actual bottlenecks, and building systems that don't need to be rebuilt in two years.
+Engineering at scale. I build data systems that handle billions of records, cut infrastructure costs, and actually last. Hands-on from product discovery, architecture, implementation to deployment.
 
-My work spans backend systems and data engineering at scale: APIs serving 20M+ monthly visitors at sub-250ms p95, pipelines handling 6B records on EMR + Airflow, and the unglamorous work of cutting cloud costs from the inside. I've built teams too: grew the engineering team from 3 to 7 and mentored developers who were later promoted.
+15+ years of it. Pipelines, EMR clusters, Airflow DAGs, and the unglamorous work of cutting cloud costs from the inside. I profile actual bottlenecks before changing anything, and prefer durable fixes over clever ones.
 
-AWS Certified Solutions Architect: Associate (July 2022). Currently a Senior Engineer at Veridooh, working on a Digital OOH advertising platform.
+Built teams too: grew engineering at iPrice from 3 to 7 and mentored two developers who were later promoted. AWS Certified Solutions Architect: Associate (July 2022).
 
 ### Numbers worth quoting
 
 **Backend at scale**
 - **20M+** monthly visitors served
 - **<250ms** API p95 latency
-- **4x** crawler throughput (60K → 250K pages/hour)
+- **4x** crawler throughput (60K -> 250K pages/hour)
 
 **Data engineering**
 - **6B** records at peak
-- **$6K+** monthly infrastructure savings (EMR $7K → $3K, OpenSearch $2K → self-hosted, reporting ~$1K)
+- **$6K+** monthly infrastructure savings (EMR $7K -> $3K, OpenSearch $2K -> self-hosted, reporting ~$1K)
 - **<8 h** data processing time
 
 **Leadership**
 - Engineering team grown from **3 to 7**, with 2 engineers later promoted
 
+### Case studies
+
+See [theanh.github.io](https://theanh.github.io) for the long versions.
+
+- **iPrice Price Comparison Platform** (2018-2024): flagship with the cost, scale, and latency numbers above.
+- **Cutting Spark shuffle cost**: wide vs narrow transformations on billion-record EMR pipelines.
+- **[SketchNet](https://theanh.github.io/sketchnet)**: CNN for hand-drawn sketches. 95.1% accuracy, 938 KB model, 1ms inference. [Live demo](https://theanh.streamlit.app/sketchnet).
+- **DIA Risk Screener**: drug-induced autoimmunity classifier on 477 compounds. XGBoost (0.896 test AUC) wrapped with applicability-domain, structural alerts, read-across, and SHAP. [Live demo](https://theanh.streamlit.app/drug-screener).
+- **PCA Audio Toolkit**: PCA-based audio denoising and lossy compression. [Live demo](https://theanh.streamlit.app/pca).
+
 ### Stack
 
-`Python` · `TypeScript` · `JavaScript` · `PHP` · `AWS (Athena · EMR · S3 · SQS · ElastiCache · Lambda · RDS)` · `Azure Data Warehouse` · `Apache Airflow` · `PySpark` · `Elasticsearch` · `MySQL` · `PostgreSQL` · `SQL Server` · `Cassandra` · `Laravel` · `Symfony` · `RESTful API` · `GraphQL` · `Docker` · `Terraform` · `ELK Stack`
-
-### Pinned
-
-**[SketchNet](https://theanh.github.io/sketchnet):** Training a CNN to recognise hand-drawn sketches. From 28px bitmaps to a 938 KB quantized model that runs at 1ms per sample. Four experiments, four turning points. 95.1% accuracy on Quick Draw, 78.6% on independent real-world drawings. [Live demo](https://theanh.streamlit.app/sketchnet)
+`Python` - `TypeScript` - `JavaScript` - `PHP` - `LLM` - `PyTorch` - `AWS (Athena - EMR - S3 - SQS - ElastiCache - Lambda - RDS)` - `Azure Data Warehouse` - `Apache Airflow` - `PySpark` - `Elasticsearch` - `MySQL` - `PostgreSQL` - `SQL Server` - `Cassandra` - `Laravel` - `Symfony` - `RESTful API` - `GraphQL` - `Docker` - `Terraform` - `ELK Stack`
 
 Outside of work I explore machine learning from scratch (see SketchNet), experiment with AI agent architecture, travel, and read.
 

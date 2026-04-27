@@ -1,4 +1,4 @@
-// Google Analytics (GA4) — replace G-XXXXXXXXXX with your Measurement ID
+// Google Analytics (GA4) - replace G-XXXXXXXXXX with your Measurement ID
 (function () {
   var GA4_ID = 'G-XXXXXXXXXX';
   var s = document.createElement('script');
