@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23ffd139'/><path d='M6 7h20v4h-8v14h-4V11H6z' fill='%231c1a14'/></svg>">
+  <title>PCA on Audio, by The Anh Nguyen</title>
+  <meta name="description" content="One algorithm, two pipelines. Compression on time-domain blocks, denoising on STFT frames, and the variance-ranking inversion that makes spectral subtraction a precondition for the second pipeline to work at all.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f7f4ee;
+      --paper:     #fbfaf6;
+      --border:    rgba(28,26,20,0.13);
+      --rule:      rgba(28,26,20,0.08);
+      --text:      #1c1a14;
+      --muted:     #7a7060;
+      --soft:      #4a4438;
+      --yellow:    #ffd139;
+      --theme:     rgba(255,209,57,0.5);
+      --theme-soft:rgba(255,209,57,0.14);
+      --green:     #16a34a;
+      --red:       #dc2626;
+      --amber:     #d97706;
+      --blue:      #2563eb;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Segoe UI", system-ui, sans-serif;
+      --font-body:    'Spectral', Georgia, "Times New Roman", serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --brushstroke:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 6' preserveAspectRatio='none'><defs><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='3' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='1.2'/></filter><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%231c1a14' stop-opacity='0.05'/><stop offset='0.2' stop-color='%231c1a14' stop-opacity='0.32'/><stop offset='0.8' stop-color='%231c1a14' stop-opacity='0.28'/><stop offset='1' stop-color='%231c1a14' stop-opacity='0.05'/></linearGradient></defs><rect x='0' y='2' width='240' height='2' fill='url(%23g)' filter='url(%23b)'/></svg>");
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; color-scheme: light; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 19px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .essay { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+    h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; color: var(--text); }
+    h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 1rem; }
+    h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.018em; line-height: 1.15; margin: 2.4rem 0 0.6rem; }
+    h2 + .dek { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1.2rem; }
+
+    p { margin: 0 0 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 600; color: var(--text); }
+    em { font-style: italic; }
+    a { color: var(--blue); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+    a:hover { text-decoration-color: var(--blue); }
+    a:visited { color: var(--soft); }
+    code {
+      font-family: var(--font-mono); font-size: 0.84em;
+      background: rgba(28,26,20,0.06); padding: 0.08em 0.4em;
+      border-radius: 3px; color: var(--text);
+    }
+
+    *:focus { outline: none; }
+    *:focus-visible { outline: 2px solid var(--theme); outline-offset: 3px; border-radius: 2px; }
+
+    .masthead {
+      border-bottom: 1px solid var(--rule);
+      padding: 14px 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .masthead .essay { display: flex; align-items: center; justify-content: space-between; padding-top: 0; padding-bottom: 0; }
+    .masthead a { color: var(--muted); text-decoration: none; }
+    .masthead a:hover { color: var(--text); }
+    .masthead-brand { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); display: inline-flex; align-items: center; gap: 9px; }
+    .seal { display: block; flex-shrink: 0; }
+    .masthead-brand .seal { width: 24px; height: 24px; }
+    .footer-brand .seal { width: 26px; height: 26px; }
+    .footer-brand { display: inline-flex; align-items: center; gap: 9px; }
+
+    .brushstroke-rule {
+      display: block; width: 240px; height: 6px;
+      margin: 2.4rem auto;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    .essay-header { padding: 56px 0 16px; }
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .standfirst {
+      font-family: var(--font-body);
+      font-size: 1.25rem;
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--soft);
+      margin: 0.6rem 0 1.2rem;
+      max-width: 600px;
+    }
+    .byline {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+      margin-bottom: 0;
+    }
+
+    .lede { font-size: 1.06em; margin-top: 1.4rem; }
+    .drop-cap {
+      float: left;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 3.6rem;
+      line-height: 0.9;
+      padding: 6px 10px 0 0;
+      margin-top: 4px;
+      color: var(--text);
+      background:
+        linear-gradient(transparent 60%, var(--theme) 60%, var(--theme) 92%, transparent 92%);
+      background-size: 100% 100%;
+      background-clip: padding-box;
+    }
+
+    figure { margin: 1.6rem 0; padding: 0; }
+    figure svg { width: 100%; height: auto; display: block; }
+    figcaption {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 0.88rem;
+      line-height: 1.45;
+      color: var(--muted);
+      margin-top: 10px;
+      text-align: left;
+    }
+
+    .tradeoffs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin: 1.2rem 0 1.6rem;
+    }
+    .tradeoffs h4 {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0 0 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .tradeoffs h4.plus { color: var(--green); border-bottom-color: rgba(22,163,74,0.3); }
+    .tradeoffs h4.minus { color: var(--red); border-bottom-color: rgba(220,38,38,0.3); }
+    .tradeoffs ul { list-style: none; padding: 0; margin: 0; }
+    .tradeoffs li {
+      font-size: 0.94rem;
+      line-height: 1.5;
+      color: var(--soft);
+      padding: 5px 0 5px 18px;
+      position: relative;
+    }
+    .tradeoffs li::before {
+      content: "–";
+      position: absolute;
+      left: 0;
+      top: 5px;
+      color: currentColor;
+      opacity: 0.55;
+      font-family: var(--font-body);
+      line-height: 1.5;
+    }
+
+    .scorecard {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0 1.4rem;
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+    }
+    .scorecard th {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 10px 4px;
+      text-align: left;
+      border-bottom: 2px solid var(--text);
+    }
+    .scorecard th.num { text-align: right; }
+    .scorecard td {
+      padding: 9px 4px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .scorecard tr:last-child td { border-bottom: 2px solid var(--text); }
+    .scorecard td.num { font-family: var(--font-mono); font-size: 0.86rem; font-variant-numeric: tabular-nums; text-align: right; }
+    .scorecard td.muted { color: var(--muted); }
+    .scorecard tr.lead td { background: var(--theme-soft); }
+
+    .architecture {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--muted);
+      padding: 1.2rem 0 0;
+      border-top: 1px solid var(--rule);
+      margin-top: 1.6rem;
+    }
+    .architecture strong { font-style: normal; color: var(--text); font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; display: inline-block; margin-right: 6px; }
+
+    footer {
+      margin-top: 4rem;
+      padding: 32px 0 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    footer .essay { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); text-decoration: underline; }
+    .footer-brand { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
+
+    @media (max-width: 720px) {
+      body { font-size: 17.5px; }
+      h1 { font-size: 2.05rem; }
+      h2 { font-size: 1.35rem; margin-top: 2rem; }
+      .essay { padding: 0 20px; }
+      .essay-header { padding-top: 36px; }
+      .standfirst { font-size: 1.1rem; }
+      .drop-cap { font-size: 3rem; padding-right: 8px; }
+      .tradeoffs { grid-template-columns: 1fr; gap: 14px; }
+    }
+  </style>
+
+  <script async src="/analytics.js"></script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="essay">
+    <a href="/" class="masthead-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <filter id="sealedge" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/>
+          </filter>
+        </defs>
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      The Anh Nguyen
+    </a>
+    <a href="https://theanh.streamlit.app/pca" target="_blank" rel="noopener">Try the live app -></a>
+  </div>
+</header>
+
+<article class="essay">
+
+  <header class="essay-header">
+    <p class="kicker">Field notes - Signal processing - April 2026</p>
+    <h1>PCA on Audio</h1>
+    <p class="standfirst">
+      One algorithm, two audio pipelines. Compression is straightforward. Denoising has a
+      catch you have to handle first.
+    </p>
+    <p class="byline">By The Anh Nguyen - PCA - STFT - Spectral subtraction</p>
+  </header>
+
+  <p class="lede">
+    <span class="drop-cap">P</span>CA finds the directions in your data with the most variance,
+    ranks them, and lets you keep the top few or drop the bottom few. On audio, that one move
+    does two different jobs.
+  </p>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>1. What PCA does</h2>
+  <p class="dek">A basis sorted by variance</p>
+
+  <p>
+    PCA fits an orthogonal basis to a matrix. The first axis points where the data varies most;
+    each next axis is orthogonal to the previous and explains the next-most variance. Common uses:
+    keep the top-K axes for a compact approximation (compression / dimensionality reduction), or
+    drop the bottom-K axes if you believe noise lives there (denoising).
+  </p>
+
+  <figure aria-labelledby="pca-cap">
+    <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" aria-label="2D scatter with first principal component direction">
+      <rect x="0" y="0" width="720" height="220" fill="none"/>
+
+      <line x1="80" y1="180" x2="640" y2="180" stroke="rgba(28,26,20,0.15)" stroke-width="1"/>
+      <line x1="80" y1="20"  x2="80"  y2="180" stroke="rgba(28,26,20,0.15)" stroke-width="1"/>
+
+      <text x="360" y="200" font-family="JetBrains Mono" font-size="9" fill="#7a7060" text-anchor="middle">feature 1</text>
+      <text x="55"  y="100" font-family="JetBrains Mono" font-size="9" fill="#7a7060" text-anchor="middle" transform="rotate(-90, 55, 100)">feature 2</text>
+
+      <g fill="#1c1a14">
+        <circle cx="140" cy="160" r="3.5"/>
+        <circle cx="170" cy="148" r="3.5"/>
+        <circle cx="195" cy="142" r="3.5"/>
+        <circle cx="220" cy="128" r="3.5"/>
+        <circle cx="245" cy="120" r="3.5"/>
+        <circle cx="270" cy="115" r="3.5"/>
+        <circle cx="295" cy="100" r="3.5"/>
+        <circle cx="325" cy="92"  r="3.5"/>
+        <circle cx="355" cy="85"  r="3.5"/>
+        <circle cx="385" cy="74"  r="3.5"/>
+        <circle cx="415" cy="68"  r="3.5"/>
+        <circle cx="445" cy="58"  r="3.5"/>
+        <circle cx="475" cy="50"  r="3.5"/>
+        <circle cx="505" cy="42"  r="3.5"/>
+        <circle cx="190" cy="155" r="3.5"/>
+        <circle cx="260" cy="135" r="3.5"/>
+        <circle cx="320" cy="105" r="3.5"/>
+        <circle cx="380" cy="92"  r="3.5"/>
+        <circle cx="430" cy="78"  r="3.5"/>
+        <circle cx="490" cy="62"  r="3.5"/>
+      </g>
+
+      <line x1="120" y1="170" x2="540" y2="36" stroke="#ffd139" stroke-width="3.5" stroke-linecap="round"/>
+      <polygon points="540,36 525,32 532,48" fill="#ffd139"/>
+      <text x="555" y="40" font-family="JetBrains Mono" font-size="11" font-weight="500" fill="#1c1a14">PC1</text>
+      <text x="555" y="55" font-family="JetBrains Mono" font-size="9" fill="#7a7060">most variance</text>
+
+      <line x1="330" y1="103" x2="352" y2="173" stroke="#7a7060" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+      <polygon points="352,173 353,162 345,164" fill="#7a7060" opacity="0.7"/>
+      <text x="358" y="178" font-family="JetBrains Mono" font-size="10" fill="#7a7060">PC2</text>
+    </svg>
+    <figcaption id="pca-cap">
+      PC1 points along the spread of the points; PC2 is orthogonal and captures the leftover.
+      Keep top-K to compress; drop bottom-K to denoise.
+    </figcaption>
+  </figure>
+
+  <h2>2. Why audio?</h2>
+  <p class="dek">Two ways to turn a waveform into a matrix</p>
+
+  <p>
+    A waveform is 1D; PCA needs a 2D matrix. There are two ways to turn audio into a matrix.
+    The compression pipeline uses one; the denoising pipeline uses the other.
+  </p>
+
+  <figure aria-labelledby="matrix-cap">
+    <svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" aria-label="Waveform reshaped into time-domain blocks vs converted to STFT spectrogram">
+      <text x="170" y="18" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.06em">RESHAPE INTO BLOCKS</text>
+      <text x="170" y="32" font-family="Spectral, Georgia, serif" font-size="10" font-style="italic" fill="#7a7060" text-anchor="middle">time-domain · used by compression</text>
+
+      <g transform="translate(40, 50)">
+        <line x1="0" y1="22" x2="260" y2="22" stroke="rgba(28,26,20,0.1)" stroke-width="1"/>
+        <path d="M 0,22 Q 8,8 16,18 T 32,22 Q 40,5 48,28 T 64,18 T 80,10 Q 88,32 96,18 T 112,12 T 128,28 Q 136,8 144,22 T 160,18 Q 168,30 176,12 T 192,22 T 208,10 Q 216,28 224,18 T 240,15 T 260,22"
+              stroke="#1c1a14" stroke-width="1.4" fill="none"/>
+      </g>
+
+      <line x1="170" y1="92" x2="170" y2="115" stroke="#7a7060" stroke-width="1.5"/>
+      <polygon points="170,118 165,108 175,108" fill="#7a7060"/>
+
+      <g transform="translate(60, 130)">
+        <rect x="0" y="0"  width="220" height="18" fill="rgba(255,209,57,0.18)" stroke="rgba(28,26,20,0.2)" stroke-width="1"/>
+        <path d="M 0,9 Q 8,3 16,8 T 32,11 T 48,5 T 64,12 T 80,8 T 96,7 T 112,13 T 128,10 T 144,15 T 160,8 T 176,6 T 192,12 T 208,11 T 220,9" stroke="#1c1a14" stroke-width="0.9" fill="none"/>
+
+        <rect x="0" y="22" width="220" height="18" fill="rgba(255,209,57,0.18)" stroke="rgba(28,26,20,0.2)" stroke-width="1"/>
+        <path d="M 0,31 Q 8,37 16,28 T 32,32 T 48,40 T 64,26 T 80,34 T 96,38 T 112,30 T 128,27 T 144,35 T 160,33 T 176,28 T 192,36 T 208,30 T 220,32" stroke="#1c1a14" stroke-width="0.9" fill="none"/>
+
+        <rect x="0" y="44" width="220" height="18" fill="rgba(255,209,57,0.18)" stroke="rgba(28,26,20,0.2)" stroke-width="1"/>
+        <path d="M 0,53 Q 8,50 16,55 T 32,48 T 48,57 T 64,52 T 80,55 T 96,49 T 112,57 T 128,52 T 144,59 T 160,54 T 176,50 T 192,57 T 208,55 T 220,53" stroke="#1c1a14" stroke-width="0.9" fill="none"/>
+
+        <rect x="0" y="66" width="220" height="18" fill="rgba(255,209,57,0.18)" stroke="rgba(28,26,20,0.2)" stroke-width="1"/>
+        <path d="M 0,75 Q 8,77 16,72 T 32,79 T 48,73 T 64,70 T 80,77 T 96,72 T 112,75 T 128,80 T 144,74 T 160,69 T 176,77 T 192,75 T 208,72 T 220,75" stroke="#1c1a14" stroke-width="0.9" fill="none"/>
+
+        <rect x="0" y="88" width="220" height="18" fill="rgba(255,209,57,0.18)" stroke="rgba(28,26,20,0.2)" stroke-width="1"/>
+        <path d="M 0,97 Q 8,93 16,99 T 32,91 T 48,100 T 64,95 T 80,98 T 96,92 T 112,100 T 128,95 T 144,103 T 160,97 T 176,93 T 192,100 T 208,98 T 220,97" stroke="#1c1a14" stroke-width="0.9" fill="none"/>
+      </g>
+      <text x="170" y="248" font-family="JetBrains Mono" font-size="9" fill="#7a7060" text-anchor="middle">N rows × 1024 samples each</text>
+
+      <line x1="370" y1="40" x2="370" y2="240" stroke="rgba(28,26,20,0.1)" stroke-width="1"/>
+
+      <text x="540" y="18" font-family="JetBrains Mono" font-size="9.5" font-weight="500" fill="#7a7060" text-anchor="middle" letter-spacing="0.06em">STFT SPECTROGRAM</text>
+      <text x="540" y="32" font-family="Spectral, Georgia, serif" font-size="10" font-style="italic" fill="#7a7060" text-anchor="middle">time-frequency · used by denoising</text>
+
+      <g transform="translate(410, 50)">
+        <line x1="0" y1="22" x2="260" y2="22" stroke="rgba(28,26,20,0.1)" stroke-width="1"/>
+        <path d="M 0,22 Q 8,8 16,18 T 32,22 Q 40,5 48,28 T 64,18 T 80,10 Q 88,32 96,18 T 112,12 T 128,28 Q 136,8 144,22 T 160,18 Q 168,30 176,12 T 192,22 T 208,10 Q 216,28 224,18 T 240,15 T 260,22"
+              stroke="#1c1a14" stroke-width="1.4" fill="none"/>
+      </g>
+
+      <line x1="540" y1="92" x2="540" y2="115" stroke="#7a7060" stroke-width="1.5"/>
+      <polygon points="540,118 535,108 545,108" fill="#7a7060"/>
+
+      <g transform="translate(430, 130)">
+        <rect x="0"   y="0"  width="26" height="18" fill="#1c1a14" opacity="0.85"/>
+        <rect x="26"  y="0"  width="26" height="18" fill="#1c1a14" opacity="0.6"/>
+        <rect x="52"  y="0"  width="26" height="18" fill="#1c1a14" opacity="0.4"/>
+        <rect x="78"  y="0"  width="26" height="18" fill="#1c1a14" opacity="0.7"/>
+        <rect x="104" y="0"  width="26" height="18" fill="#1c1a14" opacity="0.55"/>
+        <rect x="130" y="0"  width="26" height="18" fill="#1c1a14" opacity="0.3"/>
+        <rect x="156" y="0"  width="26" height="18" fill="#1c1a14" opacity="0.8"/>
+        <rect x="182" y="0"  width="26" height="18" fill="#1c1a14" opacity="0.65"/>
+
+        <rect x="0"   y="22" width="26" height="18" fill="#1c1a14" opacity="0.5"/>
+        <rect x="26"  y="22" width="26" height="18" fill="#1c1a14" opacity="0.7"/>
+        <rect x="52"  y="22" width="26" height="18" fill="#1c1a14" opacity="0.55"/>
+        <rect x="78"  y="22" width="26" height="18" fill="#1c1a14" opacity="0.45"/>
+        <rect x="104" y="22" width="26" height="18" fill="#1c1a14" opacity="0.6"/>
+        <rect x="130" y="22" width="26" height="18" fill="#1c1a14" opacity="0.5"/>
+        <rect x="156" y="22" width="26" height="18" fill="#1c1a14" opacity="0.4"/>
+        <rect x="182" y="22" width="26" height="18" fill="#1c1a14" opacity="0.7"/>
+
+        <rect x="0"   y="44" width="26" height="18" fill="#1c1a14" opacity="0.3"/>
+        <rect x="26"  y="44" width="26" height="18" fill="#1c1a14" opacity="0.45"/>
+        <rect x="52"  y="44" width="26" height="18" fill="#1c1a14" opacity="0.7"/>
+        <rect x="78"  y="44" width="26" height="18" fill="#1c1a14" opacity="0.35"/>
+        <rect x="104" y="44" width="26" height="18" fill="#1c1a14" opacity="0.5"/>
+        <rect x="130" y="44" width="26" height="18" fill="#1c1a14" opacity="0.6"/>
+        <rect x="156" y="44" width="26" height="18" fill="#1c1a14" opacity="0.45"/>
+        <rect x="182" y="44" width="26" height="18" fill="#1c1a14" opacity="0.55"/>
+
+        <rect x="0"   y="66" width="26" height="18" fill="#1c1a14" opacity="0.25"/>
+        <rect x="26"  y="66" width="26" height="18" fill="#1c1a14" opacity="0.35"/>
+        <rect x="52"  y="66" width="26" height="18" fill="#1c1a14" opacity="0.45"/>
+        <rect x="78"  y="66" width="26" height="18" fill="#1c1a14" opacity="0.3"/>
+        <rect x="104" y="66" width="26" height="18" fill="#1c1a14" opacity="0.55"/>
+        <rect x="130" y="66" width="26" height="18" fill="#1c1a14" opacity="0.4"/>
+        <rect x="156" y="66" width="26" height="18" fill="#1c1a14" opacity="0.5"/>
+        <rect x="182" y="66" width="26" height="18" fill="#1c1a14" opacity="0.35"/>
+
+        <rect x="0"   y="88" width="26" height="18" fill="#1c1a14" opacity="0.2"/>
+        <rect x="26"  y="88" width="26" height="18" fill="#1c1a14" opacity="0.25"/>
+        <rect x="52"  y="88" width="26" height="18" fill="#1c1a14" opacity="0.35"/>
+        <rect x="78"  y="88" width="26" height="18" fill="#1c1a14" opacity="0.4"/>
+        <rect x="104" y="88" width="26" height="18" fill="#1c1a14" opacity="0.3"/>
+        <rect x="130" y="88" width="26" height="18" fill="#1c1a14" opacity="0.45"/>
+        <rect x="156" y="88" width="26" height="18" fill="#1c1a14" opacity="0.25"/>
+        <rect x="182" y="88" width="26" height="18" fill="#1c1a14" opacity="0.35"/>
+
+        <rect x="-26"  y="0"  width="22" height="106" fill="none" stroke="rgba(28,26,20,0.4)" stroke-width="1"/>
+        <text x="-15" y="56" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="middle" transform="rotate(-90, -15, 56)">freq</text>
+      </g>
+      <text x="540" y="248" font-family="JetBrains Mono" font-size="9" fill="#7a7060" text-anchor="middle">freq bins × time frames</text>
+    </svg>
+    <figcaption id="matrix-cap">
+      Same waveform, two matrices. Time-blocks expose redundancy across short slices of waveform.
+      The STFT exposes structure across frequency.
+    </figcaption>
+  </figure>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>3. Compression</h2>
+  <p class="dek">Top-K basis on time-domain blocks</p>
+
+  <p>
+    Music repeats itself. The same chord shape comes back, the same drum hit, the same vowel
+    sound. Many short slices of waveform end up looking like other slices, and a small set
+    of basis shapes covers most of them.
+  </p>
+
+  <table class="scorecard" aria-label="Compression: components vs SNR vs ratio">
+    <thead>
+      <tr>
+        <th>K</th>
+        <th class="num">Variance</th>
+        <th class="num">SNR (dB)</th>
+        <th class="num">Ratio</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>4</td>   <td class="num muted">~30%</td>   <td class="num muted">~3</td>  <td class="num">~100×</td></tr>
+      <tr><td>16</td>  <td class="num muted">~60%</td>   <td class="num muted">~8</td>  <td class="num">~40×</td></tr>
+      <tr class="lead"><td><strong>64 (default)</strong></td><td class="num"><strong>~97%</strong></td><td class="num"><strong>~15</strong></td><td class="num"><strong>~9×</strong></td></tr>
+      <tr><td>256</td> <td class="num muted">~99.9%</td> <td class="num muted">~30</td> <td class="num">~3×</td></tr>
+    </tbody>
+  </table>
+
+  <div class="tradeoffs">
+    <div>
+      <h4 class="plus">Advantages vs MP3 / Opus</h4>
+      <ul>
+        <li>No training, no learned codec.</li>
+        <li>Deterministic; one knob (K) for size.</li>
+        <li>Drops higher frequencies first as a free side effect.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="minus">Limitations vs MP3 / Opus</h4>
+      <ul>
+        <li>Worse perceptual quality at any matched ratio.</li>
+        <li>Not streamable. PCA fits the whole signal at once.</li>
+        <li>Hard cutoffs cause artifacts at low K.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>4. Denoising</h2>
+  <p class="dek">The simple plan, and why it isn't enough</p>
+
+  <p>
+    Music has shape. A sung note, a plucked string, a drum hit. Each one is a recognisable
+    pattern that repeats in the recording. PCA finds those patterns and sorts them from
+    strongest to weakest. Pure random crackle has no pattern, so it falls to the weak end.
+    The plan: keep the strong end (the music), drop the weak end (the noise).
+  </p>
+
+  <p>
+    That works for crackles. It doesn't work for steady noise.
+  </p>
+
+  <p>
+    A fan hum, microphone hiss, a refrigerator drone. These never let up. They're constant.
+    To PCA, "constant" looks like "the strongest pattern in the room", so the noise gets sorted
+    right next to the music at the top. Drop the weak end and the noise stays where it is.
+  </p>
+
+  <figure aria-labelledby="bars-cap">
+    <svg viewBox="0 0 720 320" xmlns="http://www.w3.org/2000/svg" aria-label="Variance per principal component, with and without spectral subtraction">
+      <text x="170" y="20" font-family="JetBrains Mono" font-size="10" font-weight="500" fill="#dc2626" text-anchor="middle" letter-spacing="0.06em">WITHOUT SPECTRAL SUBTRACTION</text>
+      <text x="540" y="20" font-family="JetBrains Mono" font-size="10" font-weight="500" fill="#16a34a" text-anchor="middle" letter-spacing="0.06em">WITH SPECTRAL SUBTRACTION</text>
+
+      <g transform="translate(40, 50)">
+        <line x1="0" y1="180" x2="280" y2="180" stroke="rgba(28,26,20,0.25)" stroke-width="1"/>
+        <text x="-8" y="184" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="end">0</text>
+        <line x1="0" y1="40" x2="280" y2="40" stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="3,4"/>
+        <text x="-8" y="44" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="end">var</text>
+
+        <rect x="6"   y="44"  width="18" height="136" fill="#dc2626" opacity="0.85"/>
+        <rect x="28"  y="56"  width="18" height="124" fill="#dc2626" opacity="0.78"/>
+        <rect x="50"  y="68"  width="18" height="112" fill="#dc2626" opacity="0.72"/>
+        <rect x="72"  y="80"  width="18" height="100" fill="#dc2626" opacity="0.65"/>
+        <rect x="94"  y="92"  width="18" height="88"  fill="#dc2626" opacity="0.55"/>
+        <rect x="116" y="104" width="18" height="76"  fill="#ffd139" opacity="0.85"/>
+        <rect x="138" y="118" width="18" height="62"  fill="#ffd139" opacity="0.72"/>
+        <rect x="160" y="130" width="18" height="50"  fill="#ffd139" opacity="0.6"/>
+        <rect x="182" y="142" width="18" height="38"  fill="#ffd139" opacity="0.5"/>
+        <rect x="204" y="154" width="18" height="26"  fill="#7a7060" opacity="0.5"/>
+        <rect x="226" y="164" width="18" height="16"  fill="#7a7060" opacity="0.4"/>
+        <rect x="248" y="170" width="18" height="10"  fill="#7a7060" opacity="0.3"/>
+
+        <line x1="200" y1="32" x2="200" y2="180" stroke="#1c1a14" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+        <text x="204" y="36" font-family="JetBrains Mono" font-size="8" fill="#1c1a14">cutoff</text>
+
+        <text x="50"  y="200" font-family="JetBrains Mono" font-size="8.5" font-weight="500" fill="#dc2626" letter-spacing="0.04em">↑ NOISE</text>
+        <text x="240" y="200" font-family="JetBrains Mono" font-size="8.5" fill="#7a7060" letter-spacing="0.04em" text-anchor="middle">↑ faint signal</text>
+
+        <text x="140" y="220" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="middle">PRINCIPAL COMPONENT (BY VARIANCE)</text>
+        <text x="140" y="252" font-family="Spectral, Georgia, serif" font-size="11.5" fill="#1c1a14" text-anchor="middle" font-style="italic">Drop tail → drop faint signal.</text>
+        <text x="140" y="268" font-family="Spectral, Georgia, serif" font-size="11.5" fill="#dc2626" text-anchor="middle" font-style="italic">Noise stays.</text>
+      </g>
+
+      <line x1="370" y1="50" x2="370" y2="280" stroke="rgba(28,26,20,0.1)" stroke-width="1"/>
+
+      <g transform="translate(410, 50)">
+        <line x1="0" y1="180" x2="280" y2="180" stroke="rgba(28,26,20,0.25)" stroke-width="1"/>
+        <text x="-8" y="184" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="end">0</text>
+        <line x1="0" y1="40" x2="280" y2="40" stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="3,4"/>
+        <text x="-8" y="44" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="end">var</text>
+
+        <rect x="6"   y="44"  width="18" height="136" fill="#ffd139" opacity="0.95"/>
+        <rect x="28"  y="58"  width="18" height="122" fill="#ffd139" opacity="0.9"/>
+        <rect x="50"  y="72"  width="18" height="108" fill="#ffd139" opacity="0.85"/>
+        <rect x="72"  y="86"  width="18" height="94"  fill="#ffd139" opacity="0.8"/>
+        <rect x="94"  y="100" width="18" height="80"  fill="#ffd139" opacity="0.72"/>
+        <rect x="116" y="114" width="18" height="66"  fill="#ffd139" opacity="0.65"/>
+        <rect x="138" y="126" width="18" height="54"  fill="#ffd139" opacity="0.55"/>
+        <rect x="160" y="138" width="18" height="42"  fill="#ffd139" opacity="0.45"/>
+        <rect x="182" y="150" width="18" height="30"  fill="#ffd139" opacity="0.38"/>
+        <rect x="204" y="160" width="18" height="20"  fill="#dc2626" opacity="0.7"/>
+        <rect x="226" y="168" width="18" height="12"  fill="#dc2626" opacity="0.55"/>
+        <rect x="248" y="173" width="18" height="7"   fill="#dc2626" opacity="0.45"/>
+
+        <line x1="200" y1="32" x2="200" y2="180" stroke="#1c1a14" stroke-width="1" stroke-dasharray="4,3" opacity="0.7"/>
+        <text x="204" y="36" font-family="JetBrains Mono" font-size="8" fill="#1c1a14">cutoff</text>
+
+        <text x="80"  y="200" font-family="JetBrains Mono" font-size="8.5" font-weight="500" fill="#16a34a" letter-spacing="0.04em">↑ SIGNAL</text>
+        <text x="245" y="200" font-family="JetBrains Mono" font-size="8.5" font-weight="500" fill="#dc2626" letter-spacing="0.04em" text-anchor="middle">↑ noise</text>
+
+        <text x="140" y="220" font-family="JetBrains Mono" font-size="8" fill="#7a7060" text-anchor="middle">PRINCIPAL COMPONENT (BY VARIANCE)</text>
+        <text x="140" y="252" font-family="Spectral, Georgia, serif" font-size="11.5" fill="#16a34a" text-anchor="middle" font-style="italic">Drop tail → drop the noise.</text>
+        <text x="140" y="268" font-family="Spectral, Georgia, serif" font-size="11.5" fill="#1c1a14" text-anchor="middle" font-style="italic">Signal preserved.</text>
+      </g>
+    </svg>
+    <figcaption id="bars-cap">
+      Variance-sorted principal components. Stationary noise has high variance across frames, so
+      raw PCA ranks it at the top. Spectral subtraction removes the noise floor first; then the
+      ranking inverts and the variance threshold can drop the tail cleanly.
+    </figcaption>
+  </figure>
+
+  <p>
+    Spectral subtraction fixes this. Find the quietest moments in the recording, like the
+    gaps between notes or the silences between words, and use them to measure what the
+    constant background sounds like. Subtract that background from the rest of the recording.
+    The steady noise is mostly gone before PCA even sees the data, the sorting flips back to
+    normal, and dropping the weak end actually drops noise.
+  </p>
+
+  <div class="tradeoffs">
+    <div>
+      <h4 class="plus">Advantages vs Wiener / RNNoise</h4>
+      <ul>
+        <li>No training, no model dependencies.</li>
+        <li>Interpretable; one variance-threshold knob.</li>
+        <li>Deterministic and sample-rate agnostic.</li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="minus">Limitations vs Wiener / RNNoise</h4>
+      <ul>
+        <li>Needs a quiet reference window in the recording.</li>
+        <li>Magnitude-only, so phase keeps the noise.</li>
+        <li>Hard cutoffs leave musical artifacts.</li>
+        <li>Outperformed by deep-learning denoisers on perceptual quality.</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="architecture">
+    <strong>Stack</strong>
+    NumPy, SciPy, scikit-learn, librosa, soundfile, Streamlit.
+  </p>
+
+</article>
+
+<footer>
+  <div class="essay">
+    <span class="footer-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      The Anh Nguyen
+    </span>
+    <span>
+      <a href="/"><- Back to portfolio</a>
+      &nbsp;-&nbsp;
+      <a href="https://theanh.streamlit.app/pca" target="_blank" rel="noopener">Live app</a>
+      &nbsp;-&nbsp;
+      <a href="https://github.com/theanh">GitHub</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>
