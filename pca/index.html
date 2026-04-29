@@ -9,248 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg:        #f7f4ee;
-      --paper:     #fbfaf6;
-      --border:    rgba(28,26,20,0.13);
-      --rule:      rgba(28,26,20,0.08);
-      --text:      #1c1a14;
-      --muted:     #7a7060;
-      --soft:      #4a4438;
-      --yellow:    #ffd139;
-      --theme:     rgba(255,209,57,0.5);
-      --theme-soft:rgba(255,209,57,0.14);
-      --green:     #16a34a;
-      --red:       #dc2626;
-      --amber:     #d97706;
-      --blue:      #2563eb;
-      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Segoe UI", system-ui, sans-serif;
-      --font-body:    'Spectral', Georgia, "Times New Roman", serif;
-      --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-      --brushstroke:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 6' preserveAspectRatio='none'><defs><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='3' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='1.2'/></filter><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%231c1a14' stop-opacity='0.05'/><stop offset='0.2' stop-color='%231c1a14' stop-opacity='0.32'/><stop offset='0.8' stop-color='%231c1a14' stop-opacity='0.28'/><stop offset='1' stop-color='%231c1a14' stop-opacity='0.05'/></linearGradient></defs><rect x='0' y='2' width='240' height='2' fill='url(%23g)' filter='url(%23b)'/></svg>");
-    }
-
-    html { scroll-behavior: smooth; scroll-padding-top: 24px; color-scheme: light; }
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 19px;
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    .essay { max-width: 720px; margin: 0 auto; padding: 0 24px; }
-
-    h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; color: var(--text); }
-    h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 1rem; }
-    h2 { font-size: 1.6rem; font-weight: 700; letter-spacing: -0.018em; line-height: 1.15; margin: 2.4rem 0 0.6rem; }
-    h2 + .dek { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1.2rem; }
-
-    p { margin: 0 0 1rem; }
-    p:last-child { margin-bottom: 0; }
-    strong { font-weight: 600; color: var(--text); }
-    em { font-style: italic; }
-    a { color: var(--blue); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
-    a:hover { text-decoration-color: var(--blue); }
-    a:visited { color: var(--soft); }
-    code {
-      font-family: var(--font-mono); font-size: 0.84em;
-      background: rgba(28,26,20,0.06); padding: 0.08em 0.4em;
-      border-radius: 3px; color: var(--text);
-    }
-
-    *:focus { outline: none; }
-    *:focus-visible { outline: 2px solid var(--theme); outline-offset: 3px; border-radius: 2px; }
-
-    .masthead {
-      border-bottom: 1px solid var(--rule);
-      padding: 14px 0;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    .masthead .essay { display: flex; align-items: center; justify-content: space-between; padding-top: 0; padding-bottom: 0; }
-    .masthead a { color: var(--muted); text-decoration: none; }
-    .masthead a:hover { color: var(--text); }
-    .masthead-brand { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); display: inline-flex; align-items: center; gap: 9px; }
-    .seal { display: block; flex-shrink: 0; }
-    .masthead-brand .seal { width: 24px; height: 24px; }
-    .footer-brand .seal { width: 26px; height: 26px; }
-    .footer-brand { display: inline-flex; align-items: center; gap: 9px; }
-
-    .brushstroke-rule {
-      display: block; width: 240px; height: 6px;
-      margin: 2.4rem auto;
-      background-image: var(--brushstroke);
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      pointer-events: none;
-    }
-
-    .essay-header { padding: 56px 0 16px; }
-    .kicker {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-    .standfirst {
-      font-family: var(--font-body);
-      font-size: 1.25rem;
-      font-style: italic;
-      line-height: 1.45;
-      color: var(--soft);
-      margin: 0.6rem 0 1.2rem;
-      max-width: 600px;
-    }
-    .byline {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      padding-top: 14px;
-      border-top: 1px solid var(--rule);
-      margin-bottom: 0;
-    }
-
-    .lede { font-size: 1.06em; margin-top: 1.4rem; }
-    .drop-cap {
-      float: left;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 3.6rem;
-      line-height: 0.9;
-      padding: 6px 10px 0 0;
-      margin-top: 4px;
-      color: var(--text);
-      background:
-        linear-gradient(transparent 60%, var(--theme) 60%, var(--theme) 92%, transparent 92%);
-      background-size: 100% 100%;
-      background-clip: padding-box;
-    }
-
-    figure { margin: 1.6rem 0; padding: 0; }
-    figure svg { width: 100%; height: auto; display: block; }
-    figcaption {
-      font-family: var(--font-body);
-      font-style: italic;
-      font-size: 0.88rem;
-      line-height: 1.45;
-      color: var(--muted);
-      margin-top: 10px;
-      text-align: left;
-    }
-
-    .tradeoffs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      margin: 1.2rem 0 1.6rem;
-    }
-    .tradeoffs h4 {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin: 0 0 8px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid var(--rule);
-    }
-    .tradeoffs h4.plus { color: var(--green); border-bottom-color: rgba(22,163,74,0.3); }
-    .tradeoffs h4.minus { color: var(--red); border-bottom-color: rgba(220,38,38,0.3); }
-    .tradeoffs ul { list-style: none; padding: 0; margin: 0; }
-    .tradeoffs li {
-      font-size: 0.94rem;
-      line-height: 1.5;
-      color: var(--soft);
-      padding: 5px 0 5px 18px;
-      position: relative;
-    }
-    .tradeoffs li::before {
-      content: "–";
-      position: absolute;
-      left: 0;
-      top: 5px;
-      color: currentColor;
-      opacity: 0.55;
-      font-family: var(--font-body);
-      line-height: 1.5;
-    }
-
-    .scorecard {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.2rem 0 1.4rem;
-      font-family: var(--font-body);
-      font-size: 0.92rem;
-    }
-    .scorecard th {
-      font-family: var(--font-mono);
-      font-size: 0.6rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 10px 4px;
-      text-align: left;
-      border-bottom: 2px solid var(--text);
-    }
-    .scorecard th.num { text-align: right; }
-    .scorecard td {
-      padding: 9px 4px;
-      border-bottom: 1px solid var(--rule);
-    }
-    .scorecard tr:last-child td { border-bottom: 2px solid var(--text); }
-    .scorecard td.num { font-family: var(--font-mono); font-size: 0.86rem; font-variant-numeric: tabular-nums; text-align: right; }
-    .scorecard td.muted { color: var(--muted); }
-    .scorecard tr.lead td { background: var(--theme-soft); }
-
-    .architecture {
-      font-family: var(--font-body);
-      font-size: 0.92rem;
-      font-style: italic;
-      line-height: 1.55;
-      color: var(--muted);
-      padding: 1.2rem 0 0;
-      border-top: 1px solid var(--rule);
-      margin-top: 1.6rem;
-    }
-    .architecture strong { font-style: normal; color: var(--text); font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; display: inline-block; margin-right: 6px; }
-
-    footer {
-      margin-top: 4rem;
-      padding: 32px 0 56px;
-      border-top: 1px solid var(--rule);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    footer .essay { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-    footer a { color: var(--muted); text-decoration: none; }
-    footer a:hover { color: var(--text); text-decoration: underline; }
-    .footer-brand { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
-
-    @media (max-width: 720px) {
-      body { font-size: 17.5px; }
-      h1 { font-size: 2.05rem; }
-      h2 { font-size: 1.35rem; margin-top: 2rem; }
-      .essay { padding: 0 20px; }
-      .essay-header { padding-top: 36px; }
-      .standfirst { font-size: 1.1rem; }
-      .drop-cap { font-size: 3rem; padding-right: 8px; }
-      .tradeoffs { grid-template-columns: 1fr; gap: 14px; }
-    }
-  </style>
+  <link rel="stylesheet" href="/case-study.css">
 
   <script async src="/analytics.js"></script>
 </head>
@@ -462,7 +221,7 @@
     </svg>
     <figcaption id="matrix-cap">
       Same waveform, two matrices. Time-blocks expose redundancy across short slices of waveform.
-      The STFT exposes structure across frequency.
+      The Short-Time Fourier Transform (STFT) exposes structure across frequency.
     </figcaption>
   </figure>
 
@@ -619,7 +378,7 @@
 
   <div class="tradeoffs">
     <div>
-      <h4 class="plus">Advantages vs Wiener / RNNoise</h4>
+      <h4 class="plus">Advantages vs Wiener / RNNoise (classical and ML denoisers)</h4>
       <ul>
         <li>No training, no model dependencies.</li>
         <li>Interpretable; one variance-threshold knob.</li>
@@ -627,7 +386,7 @@
       </ul>
     </div>
     <div>
-      <h4 class="minus">Limitations vs Wiener / RNNoise</h4>
+      <h4 class="minus">Limitations vs Wiener / RNNoise (classical and ML denoisers)</h4>
       <ul>
         <li>Needs a quiet reference window in the recording.</li>
         <li>Magnitude-only, so phase keeps the noise.</li>

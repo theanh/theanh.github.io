@@ -9,128 +9,19 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/case-study.css">
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    .essay { max-width: 680px; }
+    .essay-header { padding-bottom: 24px; }
+    h2 { font-size: 1.65rem; margin-top: 2.6rem; }
+    h2 + .dek { margin-bottom: 1.4rem; }
+    p { margin-bottom: 1.05rem; }
+    .standfirst { font-size: 1.3rem; margin-bottom: 1.4rem; }
+    .lede { font-size: 1.08em; margin-top: 0; }
+    .drop-cap { font-size: 4rem; }
+    figure { margin: 2rem 0; }
+    figcaption { font-size: 0.9rem; margin-top: 12px; }
 
-    :root {
-      --bg:        #f7f4ee;
-      --paper:     #fbfaf6;
-      --border:    rgba(28,26,20,0.13);
-      --rule:      rgba(28,26,20,0.08);
-      --text:      #1c1a14;
-      --muted:     #7a7060;
-      --soft:      #4a4438;
-      --yellow:    #ffd139;
-      --theme:     rgba(255,209,57,0.5);
-      --theme-soft:rgba(255,209,57,0.14);
-      --green:     #16a34a;
-      --red:       #dc2626;
-      --amber:     #d97706;
-      --blue:      #2563eb;
-      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Segoe UI", system-ui, sans-serif;
-      --font-body:    'Spectral', Georgia, "Times New Roman", serif;
-      --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
-      --brushstroke:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 6' preserveAspectRatio='none'><defs><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='3' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='1.2'/></filter><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%231c1a14' stop-opacity='0.05'/><stop offset='0.2' stop-color='%231c1a14' stop-opacity='0.32'/><stop offset='0.8' stop-color='%231c1a14' stop-opacity='0.28'/><stop offset='1' stop-color='%231c1a14' stop-opacity='0.05'/></linearGradient></defs><rect x='0' y='2' width='240' height='2' fill='url(%23g)' filter='url(%23b)'/></svg>");
-    }
-
-    html { scroll-behavior: smooth; scroll-padding-top: 24px; color-scheme: light; }
-    body {
-      font-family: var(--font-body);
-      background: var(--bg);
-      color: var(--text);
-      font-size: 19px;
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    .essay { max-width: 680px; margin: 0 auto; padding: 0 24px; }
-
-    h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; color: var(--text); }
-    h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 1rem; }
-    h2 { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.018em; line-height: 1.15; margin: 2.6rem 0 0.6rem; }
-    h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.005em; margin: 1.6rem 0 0.4rem; }
-    h2 + .dek { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1.4rem; }
-
-    p { margin: 0 0 1.05rem; }
-    p:last-child { margin-bottom: 0; }
-    strong { font-weight: 600; color: var(--text); }
-    em { font-style: italic; }
-    a { color: var(--blue); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
-    a:hover { text-decoration-color: var(--blue); }
-    a:visited { color: var(--soft); }
-    code {
-      font-family: var(--font-mono); font-size: 0.84em;
-      background: rgba(28,26,20,0.06); padding: 0.08em 0.4em;
-      border-radius: 3px; color: var(--text);
-    }
-    hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem auto; max-width: 80px; }
-    hr.full { max-width: 100%; }
-
-    *:focus { outline: none; }
-    *:focus-visible { outline: 2px solid var(--theme); outline-offset: 3px; border-radius: 2px; }
-
-    /* Masthead */
-    .masthead {
-      border-bottom: 1px solid var(--rule);
-      padding: 14px 0;
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.05em;
-      color: var(--muted);
-    }
-    .masthead .essay { display: flex; align-items: center; justify-content: space-between; padding-top: 0; padding-bottom: 0; }
-    .masthead a { color: var(--muted); text-decoration: none; }
-    .masthead a:hover { color: var(--text); }
-    .masthead-brand { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); text-transform: none; display: inline-flex; align-items: center; gap: 9px; }
-    .seal { display: block; flex-shrink: 0; }
-    .masthead-brand .seal { width: 24px; height: 24px; }
-    .footer-brand .seal { width: 26px; height: 26px; }
-    .footer-brand { display: inline-flex; align-items: center; gap: 9px; }
-
-    /* Brushstroke divider (replaces hr.full where painterly fits) */
-    .brushstroke-rule {
-      display: block; width: 240px; height: 6px;
-      margin: 2.4rem auto;
-      background-image: var(--brushstroke);
-      background-size: 100% 100%;
-      background-repeat: no-repeat;
-      pointer-events: none;
-    }
-
-    /* Article header */
-    .essay-header { padding: 56px 0 24px; }
-    .kicker {
-      font-family: var(--font-mono);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-    .standfirst {
-      font-family: var(--font-body);
-      font-size: 1.3rem;
-      font-style: italic;
-      line-height: 1.45;
-      color: var(--soft);
-      margin: 0.6rem 0 1.4rem;
-      max-width: 600px;
-    }
-    .byline {
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      letter-spacing: 0.04em;
-      color: var(--muted);
-      padding-top: 14px;
-      border-top: 1px solid var(--rule);
-      margin-bottom: 0;
-    }
-    .byline a { color: var(--blue); text-decoration: none; }
-    .byline a:hover { text-decoration: underline; }
-
-    /* Headline metrics row (top of article) */
     .metrics {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -169,52 +60,6 @@
       margin-top: 6px;
     }
 
-    /* Lede paragraph + drop cap */
-    .lede { font-size: 1.08em; }
-    .drop-cap {
-      float: left;
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: 4rem;
-      line-height: 0.9;
-      padding: 6px 10px 0 0;
-      margin-top: 4px;
-      color: var(--text);
-      background:
-        linear-gradient(transparent 60%, var(--theme) 60%, var(--theme) 92%, transparent 92%);
-      background-size: 100% 100%;
-      background-clip: padding-box;
-    }
-
-    /* Figure / chart */
-    figure {
-      margin: 2rem 0;
-      padding: 0;
-    }
-    figure.full { margin-left: calc(-1 * (100vw - 100%) / 2); margin-right: calc(-1 * (100vw - 100%) / 2); }
-    figcaption {
-      font-family: var(--font-body);
-      font-style: italic;
-      font-size: 0.9rem;
-      line-height: 1.45;
-      color: var(--muted);
-      margin-top: 12px;
-      text-align: left;
-    }
-    figure.chart svg { width: 100%; height: auto; display: block; }
-    figure.chart .mini-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
-    figure.chart .mini-pair > div > p {
-      font-family: var(--font-mono);
-      font-size: 0.65rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 0 0 8px;
-    }
-    figure img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
-
-    /* Pull / aside callout */
     .callout {
       border-left: 3px solid var(--yellow);
       padding: 12px 16px 12px 20px;
@@ -241,7 +86,6 @@
       margin-bottom: 6px;
     }
 
-    /* Inline result line */
     .result-line {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -272,7 +116,6 @@
     }
     .result-cell .result-tag em { color: var(--amber); font-style: italic; text-transform: none; letter-spacing: 0; }
 
-    /* Lessons list */
     .lessons {
       list-style: none;
       counter-reset: lesson;
@@ -313,58 +156,29 @@
       line-height: 1.55;
     }
 
-    /* Scorecard table */
-    .scorecard {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 1.2rem 0;
-      font-family: var(--font-body);
-      font-size: 0.95rem;
-    }
-    .scorecard th {
-      font-family: var(--font-mono);
-      font-size: 0.62rem;
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      color: var(--muted);
-      padding: 12px 4px;
-      text-align: left;
-      border-bottom: 2px solid var(--text);
-    }
-    .scorecard td {
-      padding: 12px 4px;
-      border-bottom: 1px solid var(--rule);
-      vertical-align: top;
-    }
-    .scorecard tr:last-child td { border-bottom: 2px solid var(--text); }
+    .scorecard { margin: 1.2rem 0; font-size: 0.95rem; }
+    .scorecard th { padding: 12px 4px; font-size: 0.62rem; }
+    .scorecard td { padding: 12px 4px; }
     .scorecard td.gate, .scorecard td.actual { font-family: var(--font-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
     .scorecard td.gate { color: var(--muted); }
     .scorecard td.actual { color: var(--text); }
     .scorecard td.check { color: var(--green); font-size: 1.1rem; text-align: right; width: 40px; }
 
-    /* Architecture note */
-    .architecture {
-      font-family: var(--font-body);
-      font-size: 0.92rem;
-      font-style: italic;
-      line-height: 1.55;
-      color: var(--muted);
-      padding: 1.2rem 0 0;
-      border-top: 1px solid var(--rule);
-      margin-top: 1.2rem;
-    }
-    .architecture strong { font-style: normal; color: var(--text); font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; display: inline-block; margin-right: 6px; }
+    .architecture { margin-top: 1.2rem; }
 
-    /* Demo gif pair */
-    .demos {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin: 1.6rem 0;
+    figure.chart .mini-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+    figure.chart .mini-pair > div > p {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
     }
+
+    .demos { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 1.6rem 0; }
     .demos figure { margin: 0; }
-    .demos img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
     .demos figcaption {
       font-family: var(--font-mono);
       font-size: 0.62rem;
@@ -376,27 +190,12 @@
       text-align: left;
     }
 
-    /* Footer */
-    footer {
-      margin-top: 4rem;
-      padding: 32px 0 56px;
-      border-top: 1px solid var(--rule);
-      font-family: var(--font-mono);
-      font-size: 0.72rem;
-      color: var(--muted);
-    }
-    footer .essay { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-    footer a { color: var(--muted); text-decoration: none; }
-    footer a:hover { color: var(--text); text-decoration: underline; }
-    .footer-brand { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
-
-    @media (max-width: 680px) {
-      body { font-size: 17.5px; }
-      h1 { font-size: 2.05rem; }
+    @media (max-width: 720px) {
       h2 { font-size: 1.4rem; margin-top: 2.2rem; }
-      .essay { padding: 0 20px; }
-      .essay-header { padding-top: 36px; }
       .standfirst { font-size: 1.15rem; }
+      .drop-cap { font-size: 3.2rem; }
+    }
+    @media (max-width: 680px) {
       .metrics { grid-template-columns: 1fr; border-bottom: none; }
       .metric { border-right: none; border-bottom: 1px solid var(--rule); padding: 14px 0; }
       .metric:last-child { border-bottom: 1px solid var(--rule); }
@@ -404,7 +203,7 @@
       .result-line { grid-template-columns: 1fr; }
       .demos { grid-template-columns: 1fr; }
       figure.chart .mini-pair { grid-template-columns: 1fr; }
-      .drop-cap { font-size: 3.2rem; padding-right: 8px; }
+      .drop-cap { padding-right: 8px; }
       .lessons li { padding-left: 44px; }
     }
   </style>
@@ -469,15 +268,15 @@
   </div>
 
   <p class="lede">
-    <span class="drop-cap">T</span>he project started with Quick Draw's pre-rendered 28×28 bitmap images,
-    the same format as MNIST. Over several runs, better learning rate scheduling, more training data,
+    <span class="drop-cap">T</span>he project started with Quick Draw's pre-rendered 28×28 bitmap images (Quick Draw is Google's crowd-sourced sketch dataset of 50 million drawings),
+    the same format as MNIST (the standard handwritten-digit benchmark). Over several runs, better learning rate scheduling, more training data,
     and class-weighted loss moved accuracy from <strong>90.5% to 92.6%</strong>. Then it stopped.
     Every new attempt landed within 0.1 percentage points of the same ceiling.
   </p>
 
   <p>
     Four experiments later, the model hits 95.1% accuracy on Quick Draw, 78.6% on independent real-world
-    drawings from a different dataset, runs in just under one millisecond per sample on CPU, and weighs
+    drawings from the TU Berlin Sketch Benchmark (a separate dataset of tablet-drawn sketches), runs in just under one millisecond per sample on CPU, and weighs
     938 kilobytes on disk. The path between those numbers is the interesting part.
   </p>
 

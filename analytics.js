@@ -1,6 +1,6 @@
 // Google Analytics (GA4) - replace G-XXXXXXXXXX with your Measurement ID
 (function () {
-  var GA4_ID = 'G-XXXXXXXXXX';
+  var GA4_ID = 'G-ZDBJ50Z9BK';
   var s = document.createElement('script');
   s.async = true;
   s.src = 'https://www.googletagmanager.com/gtag/js?id=' + GA4_ID;
