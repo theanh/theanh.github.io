@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>A Sketch Recognition Learning Journey, by The Anh Nguyen</title>
+  <meta name="description" content="Training a CNN to recognise hand-drawn sketches. Four turning points from 90.5% to 95.1% accuracy, 8 hours to 31 minutes of training, and 34 MB to 938 KB on disk.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f7f4ee;
+      --paper:     #fbfaf6;
+      --border:    rgba(28,26,20,0.13);
+      --rule:      rgba(28,26,20,0.08);
+      --text:      #1c1a14;
+      --muted:     #7a7060;
+      --soft:      #4a4438;
+      --yellow:    #ffd139;
+      --theme:     rgba(255,209,57,0.5);
+      --theme-soft:rgba(255,209,57,0.14);
+      --green:     #16a34a;
+      --red:       #dc2626;
+      --amber:     #d97706;
+      --blue:      #2563eb;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Segoe UI", system-ui, sans-serif;
+      --font-body:    'Spectral', Georgia, "Times New Roman", serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --brushstroke:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 6' preserveAspectRatio='none'><defs><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='3' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='1.2'/></filter><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%231c1a14' stop-opacity='0.05'/><stop offset='0.2' stop-color='%231c1a14' stop-opacity='0.32'/><stop offset='0.8' stop-color='%231c1a14' stop-opacity='0.28'/><stop offset='1' stop-color='%231c1a14' stop-opacity='0.05'/></linearGradient></defs><rect x='0' y='2' width='240' height='2' fill='url(%23g)' filter='url(%23b)'/></svg>");
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 24px; color-scheme: light; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 19px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
+
+    .essay { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+
+    h1, h2, h3, h4 { font-family: var(--font-display); text-wrap: balance; color: var(--text); }
+    h1 { font-size: 2.6rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.05; margin-bottom: 1rem; }
+    h2 { font-size: 1.65rem; font-weight: 700; letter-spacing: -0.018em; line-height: 1.15; margin: 2.6rem 0 0.6rem; }
+    h3 { font-size: 1.05rem; font-weight: 600; letter-spacing: -0.005em; margin: 1.6rem 0 0.4rem; }
+    h2 + .dek { font-family: var(--font-mono); font-size: 0.7rem; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0 0 1.4rem; }
+
+    p { margin: 0 0 1.05rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 600; color: var(--text); }
+    em { font-style: italic; }
+    a { color: var(--blue); text-decoration: underline; text-decoration-color: rgba(37,99,235,0.35); text-underline-offset: 2px; }
+    a:hover { text-decoration-color: var(--blue); }
+    a:visited { color: var(--soft); }
+    code {
+      font-family: var(--font-mono); font-size: 0.84em;
+      background: rgba(28,26,20,0.06); padding: 0.08em 0.4em;
+      border-radius: 3px; color: var(--text);
+    }
+    hr { border: 0; border-top: 1px solid var(--rule); margin: 2.4rem auto; max-width: 80px; }
+    hr.full { max-width: 100%; }
+
+    *:focus { outline: none; }
+    *:focus-visible { outline: 2px solid var(--theme); outline-offset: 3px; border-radius: 2px; }
+
+    /* Masthead */
+    .masthead {
+      border-bottom: 1px solid var(--rule);
+      padding: 14px 0;
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+    }
+    .masthead .essay { display: flex; align-items: center; justify-content: space-between; padding-top: 0; padding-bottom: 0; }
+    .masthead a { color: var(--muted); text-decoration: none; }
+    .masthead a:hover { color: var(--text); }
+    .masthead-brand { font-family: var(--font-display); font-size: 0.9rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); text-transform: none; display: inline-flex; align-items: center; gap: 9px; }
+    .seal { display: block; flex-shrink: 0; }
+    .masthead-brand .seal { width: 24px; height: 24px; }
+    .footer-brand .seal { width: 26px; height: 26px; }
+    .footer-brand { display: inline-flex; align-items: center; gap: 9px; }
+
+    /* Brushstroke divider (replaces hr.full where painterly fits) */
+    .brushstroke-rule {
+      display: block; width: 240px; height: 6px;
+      margin: 2.4rem auto;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    /* Article header */
+    .essay-header { padding: 56px 0 24px; }
+    .kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+    .standfirst {
+      font-family: var(--font-body);
+      font-size: 1.3rem;
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--soft);
+      margin: 0.6rem 0 1.4rem;
+      max-width: 600px;
+    }
+    .byline {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      padding-top: 14px;
+      border-top: 1px solid var(--rule);
+      margin-bottom: 0;
+    }
+    .byline a { color: var(--blue); text-decoration: none; }
+    .byline a:hover { text-decoration: underline; }
+
+    /* Headline metrics row (top of article) */
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin: 2rem 0 2.4rem;
+    }
+    .metric { padding: 18px 4px; border-right: 1px solid var(--rule); }
+    .metric:last-child { border-right: none; }
+    .metric-from {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      text-decoration: line-through;
+      text-decoration-color: rgba(220,38,38,0.5);
+    }
+    .metric-to {
+      font-family: var(--font-display);
+      font-size: 1.7rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+      margin-top: 4px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* Lede paragraph + drop cap */
+    .lede { font-size: 1.08em; }
+    .drop-cap {
+      float: left;
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 4rem;
+      line-height: 0.9;
+      padding: 6px 10px 0 0;
+      margin-top: 4px;
+      color: var(--text);
+      background:
+        linear-gradient(transparent 60%, var(--theme) 60%, var(--theme) 92%, transparent 92%);
+      background-size: 100% 100%;
+      background-clip: padding-box;
+    }
+
+    /* Figure / chart */
+    figure {
+      margin: 2rem 0;
+      padding: 0;
+    }
+    figure.full { margin-left: calc(-1 * (100vw - 100%) / 2); margin-right: calc(-1 * (100vw - 100%) / 2); }
+    figcaption {
+      font-family: var(--font-body);
+      font-style: italic;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      color: var(--muted);
+      margin-top: 12px;
+      text-align: left;
+    }
+    figure.chart svg { width: 100%; height: auto; display: block; }
+    figure.chart .mini-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 8px; }
+    figure.chart .mini-pair > div > p {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 8px;
+    }
+    figure img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+
+    /* Pull / aside callout */
+    .callout {
+      border-left: 3px solid var(--yellow);
+      padding: 12px 16px 12px 20px;
+      margin: 1.8rem 0;
+      background: linear-gradient(90deg, var(--theme-soft), transparent 90%);
+      position: relative;
+    }
+    .callout > * { position: relative; z-index: 1; }
+    .callout > .callout-frame {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0; overflow: visible;
+    }
+    .callout p { margin-bottom: 0.7rem; }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout strong:first-child {
+      font-family: var(--font-display);
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--soft);
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    /* Inline result line */
+    .result-line {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin: 1.5rem 0;
+      padding: 14px 0;
+    }
+    .result-cell .result-num {
+      font-family: var(--font-display);
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      color: var(--green);
+      line-height: 1.05;
+      font-variant-numeric: tabular-nums;
+    }
+    .result-cell .result-num.neutral { color: var(--text); }
+    .result-cell .result-tag {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .result-cell .result-tag em { color: var(--amber); font-style: italic; text-transform: none; letter-spacing: 0; }
+
+    /* Lessons list */
+    .lessons {
+      list-style: none;
+      counter-reset: lesson;
+      margin: 1.4rem 0;
+    }
+    .lessons li {
+      counter-increment: lesson;
+      padding: 18px 0 18px 56px;
+      position: relative;
+      border-top: 1px solid var(--rule);
+    }
+    .lessons li:last-child { border-bottom: 1px solid var(--rule); }
+    .lessons li::before {
+      content: counter(lesson, decimal-leading-zero);
+      position: absolute;
+      left: 0;
+      top: 18px;
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--yellow);
+      -webkit-text-stroke: 0.5px rgba(28,26,20,0.4);
+      letter-spacing: 0;
+    }
+    .lessons li strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: -0.005em;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .lessons li span {
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--soft);
+      line-height: 1.55;
+    }
+
+    /* Scorecard table */
+    .scorecard {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+    }
+    .scorecard th {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 4px;
+      text-align: left;
+      border-bottom: 2px solid var(--text);
+    }
+    .scorecard td {
+      padding: 12px 4px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+    .scorecard tr:last-child td { border-bottom: 2px solid var(--text); }
+    .scorecard td.gate, .scorecard td.actual { font-family: var(--font-mono); font-size: 0.85rem; font-variant-numeric: tabular-nums; }
+    .scorecard td.gate { color: var(--muted); }
+    .scorecard td.actual { color: var(--text); }
+    .scorecard td.check { color: var(--green); font-size: 1.1rem; text-align: right; width: 40px; }
+
+    /* Architecture note */
+    .architecture {
+      font-family: var(--font-body);
+      font-size: 0.92rem;
+      font-style: italic;
+      line-height: 1.55;
+      color: var(--muted);
+      padding: 1.2rem 0 0;
+      border-top: 1px solid var(--rule);
+      margin-top: 1.2rem;
+    }
+    .architecture strong { font-style: normal; color: var(--text); font-family: var(--font-display); font-size: 0.78rem; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase; display: inline-block; margin-right: 6px; }
+
+    /* Demo gif pair */
+    .demos {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 1.6rem 0;
+    }
+    .demos figure { margin: 0; }
+    .demos img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
+    .demos figcaption {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-style: normal;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 8px;
+      text-align: left;
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding: 32px 0 56px;
+      border-top: 1px solid var(--rule);
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+    footer .essay { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); text-decoration: underline; }
+    .footer-brand { font-family: var(--font-display); font-size: 0.85rem; font-weight: 600; letter-spacing: -0.005em; color: var(--text); }
+
+    @media (max-width: 680px) {
+      body { font-size: 17.5px; }
+      h1 { font-size: 2.05rem; }
+      h2 { font-size: 1.4rem; margin-top: 2.2rem; }
+      .essay { padding: 0 20px; }
+      .essay-header { padding-top: 36px; }
+      .standfirst { font-size: 1.15rem; }
+      .metrics { grid-template-columns: 1fr; border-bottom: none; }
+      .metric { border-right: none; border-bottom: 1px solid var(--rule); padding: 14px 0; }
+      .metric:last-child { border-bottom: 1px solid var(--rule); }
+      .metric-to { font-size: 1.5rem; }
+      .result-line { grid-template-columns: 1fr; }
+      .demos { grid-template-columns: 1fr; }
+      figure.chart .mini-pair { grid-template-columns: 1fr; }
+      .drop-cap { font-size: 3.2rem; padding-right: 8px; }
+      .lessons li { padding-left: 44px; }
+    }
+  </style>
+
+  <script async src="/analytics.js"></script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="essay">
+    <a href="/" class="masthead-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <filter id="sealedge" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/>
+          </filter>
+          <filter id="calloutframe" x="-3%" y="-3%" width="106%" height="106%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="17" stitchTiles="stitch" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="0.6"/>
+          </filter>
+        </defs>
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      The Anh Nguyen
+    </a>
+    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Try the live app →</a>
+  </div>
+</header>
+
+<article class="essay">
+
+  <header class="essay-header">
+    <p class="kicker">Field notes · Machine learning · April 2026</p>
+    <h1>A Sketch Recognition Learning Journey</h1>
+    <p class="standfirst">
+      Training a convolutional neural network to recognise hand-drawn sketches.
+      Four turning points that changed everything.
+    </p>
+    <p class="byline">By The Anh Nguyen · CNN from scratch · 25 classes · Quick Draw + TU Berlin</p>
+  </header>
+
+  <div class="metrics" aria-label="Headline results">
+    <div class="metric">
+      <div class="metric-from">90.5%</div>
+      <div class="metric-to">95.1%</div>
+      <div class="metric-label">test accuracy</div>
+    </div>
+    <div class="metric">
+      <div class="metric-from">8 hours</div>
+      <div class="metric-to">31 min</div>
+      <div class="metric-label">training time</div>
+    </div>
+    <div class="metric">
+      <div class="metric-from">34 MB</div>
+      <div class="metric-to">938 KB</div>
+      <div class="metric-label">model size</div>
+    </div>
+  </div>
+
+  <p class="lede">
+    <span class="drop-cap">T</span>he project started with Quick Draw's pre-rendered 28×28 bitmap images,
+    the same format as MNIST. Over several runs, better learning rate scheduling, more training data,
+    and class-weighted loss moved accuracy from <strong>90.5% to 92.6%</strong>. Then it stopped.
+    Every new attempt landed within 0.1 percentage points of the same ceiling.
+  </p>
+
+  <p>
+    Four experiments later, the model hits 95.1% accuracy on Quick Draw, 78.6% on independent real-world
+    drawings from a different dataset, runs in just under one millisecond per sample on CPU, and weighs
+    938 kilobytes on disk. The path between those numbers is the interesting part.
+  </p>
+
+  <figure class="chart" aria-labelledby="chart-1-cap">
+    <svg viewBox="0 0 840 300" style="width:100%;height:auto" aria-label="Accuracy progression across key experiments">
+      <line x1="54" y1="240" x2="820" y2="240" stroke="rgba(28,26,20,0.12)" stroke-width="1"/>
+      <line x1="54" y1="185" x2="820" y2="185" stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="54" y1="130" x2="820" y2="130" stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="54" y1="75"  x2="820" y2="75"  stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="4,4"/>
+      <line x1="54" y1="20"  x2="820" y2="20"  stroke="rgba(28,26,20,0.08)" stroke-width="1" stroke-dasharray="4,4"/>
+
+      <text x="48" y="244" text-anchor="end" fill="#7a7060" font-family="JetBrains Mono" font-size="10">88%</text>
+      <text x="48" y="189" text-anchor="end" fill="#7a7060" font-family="JetBrains Mono" font-size="10">90%</text>
+      <text x="48" y="134" text-anchor="end" fill="#7a7060" font-family="JetBrains Mono" font-size="10">92%</text>
+      <text x="48" y="79"  text-anchor="end" fill="#7a7060" font-family="JetBrains Mono" font-size="10">94%</text>
+      <text x="48" y="24"  text-anchor="end" fill="#7a7060" font-family="JetBrains Mono" font-size="10">96%</text>
+
+      <line x1="54" y1="61" x2="820" y2="61" stroke="#dc2626" stroke-width="1" stroke-dasharray="6,4" opacity="0.5"/>
+      <text x="822" y="64" fill="#dc2626" font-family="JetBrains Mono" font-size="9" opacity="0.7">gate</text>
+
+      <rect x="75"  y="170" width="80" height="70" rx="2" fill="#ffd139" opacity="0.65"/>
+      <text x="115" y="166" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">90.5%</text>
+      <text x="115" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">Baseline</text>
+      <text x="115" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px · 1.6 MB</text>
+
+      <rect x="210" y="115" width="80" height="125" rx="2" fill="#ffd139" opacity="0.75"/>
+      <text x="250" y="111" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">92.6%</text>
+      <text x="250" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">Ceiling</text>
+      <text x="250" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">28px · best</text>
+
+      <rect x="345" y="59" width="80" height="181" rx="2" fill="#ffd139"/>
+      <text x="385" y="55" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">94.6%</text>
+      <text x="385" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">128px</text>
+      <text x="385" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">8 h · 34 MB</text>
+
+      <rect x="480" y="39" width="80" height="201" rx="2" fill="#ffd139"/>
+      <text x="520" y="35" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">95.3%</text>
+      <text x="520" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">sync fix</text>
+      <text x="520" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">31 min · 34 MB</text>
+
+      <rect x="615" y="38" width="80" height="202" rx="2" fill="#ffd139"/>
+      <text x="655" y="34" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1c1a14">95.4%</text>
+      <text x="655" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#7a7060">Quantized</text>
+      <text x="655" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#7a7060">938 KB INT8</text>
+
+      <rect x="720" y="45" width="80" height="195" rx="2" fill="#2563eb" opacity="0.75"/>
+      <text x="760" y="41" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1d4ed8">95.1%</text>
+      <text x="760" y="256" text-anchor="middle" font-family="JetBrains Mono" font-size="9" fill="#1d4ed8">Shipped</text>
+      <text x="760" y="270" text-anchor="middle" font-family="JetBrains Mono" font-size="7.5" fill="#1d4ed8">real world</text>
+
+      <line x1="54" y1="170" x2="820" y2="170" stroke="rgba(122,112,96,0.25)" stroke-width="1" stroke-dasharray="3,6"/>
+      <text x="59" y="167" fill="#7a7060" font-family="JetBrains Mono" font-size="8" opacity="0.7">baseline</text>
+    </svg>
+    <figcaption id="chart-1-cap">
+      Each bar is a key milestone in the four-act journey. The blue bar on the right is the current shipping
+      model, evaluated on independent real-world drawings rather than the Quick Draw test set. The dashed red
+      line marks the 94.5% ship gate.
+    </figcaption>
+  </figure>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>I. The 28px Ceiling</h2>
+  <p class="dek">Baseline → best at 28 pixels</p>
+
+  <p>
+    The obvious fix to the 92.6% plateau was to upscale the bitmaps to 64 pixels and give the model more
+    spatial room. That attempt took eleven hours on CPU and came back <em>worse</em> at 90.4%. The reason
+    was straightforward in hindsight: training data was blurry 28-pixel bitmaps bicubically stretched to
+    64, while a live canvas produces sharp 480-pixel drawings downscaled to 64. The model had learned
+    textures that did not exist at inference time.
+  </p>
+
+  <p>
+    The limit was not the architecture or the training procedure. Moon and circle share the same round
+    shape. At 28 pixels, distinguishing them requires differences measured in single pixels. That feature
+    does not exist at that resolution, and no amount of augmentation can create information that was
+    never there.
+  </p>
+
+  <aside class="callout">
+    <svg class="callout-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" fill="none" stroke="#ffd139" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke" filter="url(#calloutframe)"/>
+    </svg>
+    <strong>The lesson</strong>
+    <p>
+      Resolution is a hard floor on what a model can learn. Adding data or changing the loss function
+      cannot compensate for features that are physically absent from the image. The right question is:
+      what input does the model actually need, and where does that input come from?
+    </p>
+  </aside>
+
+  <h2>II. Resolution and Speed</h2>
+  <p class="dek">128px native rendering, then MPS training</p>
+
+  <p>
+    Quick Draw distributes the original stroke vectors in Newline Delimited JSON (NDJSON) format,
+    not just the pre-rendered bitmaps. Rendering those strokes directly at <strong>128×128</strong> produces
+    images with the same sharp line quality as a live canvas draw. The texture gap that killed the
+    upscaling attempt disappears entirely, because training and inference now use the same rendering
+    pipeline.
+  </p>
+
+  <p>
+    The jump was immediate: accuracy went from 92.6% to <strong>94.6%</strong>, clearing the 28-pixel
+    ceiling that had been the limit for months. The model now had enough resolution to tell apart moon
+    from circle, sun from spider, cat from dog.
+  </p>
+
+  <p>
+    The cost was training time. Eight hours on CPU per run. Moving to Apple Silicon's Metal Performance
+    Shaders (MPS) GPU was the obvious next step, but the first attempt produced a confusing result:
+    epochs were fast at first, then each one took progressively longer. A run projected to finish in
+    30 minutes stretched past five hours.
+  </p>
+
+  <aside class="callout">
+    <svg class="callout-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" fill="none" stroke="#ffd139" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke" filter="url(#calloutframe)"/>
+    </svg>
+    <strong>Unexpected finding</strong>
+    <p>
+      The original diagnosis blamed the first fully connected layer's 8.4 million parameter matrix
+      multiplication as the bottleneck. Profiling with explicit <code>torch.mps.synchronize()</code>
+      calls between stages revealed the real cause: per-batch <code>.item()</code> calls were forcing
+      781 host/device queue drains per epoch, and the drain time grew nonlinearly as session state
+      accumulated. The fix was to accumulate the loss and correct prediction count as device-side
+      tensors throughout the epoch, then call <code>.item()</code> exactly once at the end.
+      The right hypothesis would have led to the wrong fix entirely.
+    </p>
+    <p>
+      Worth noting: applying this fix while staying on CPU would have changed nothing. On CPU,
+      <code>.item()</code> is synchronous by nature, there is no separate device queue to drain,
+      and the data is already in host memory. The exponential slowdown was a GPU-specific problem.
+      The sync fix and the GPU switch only work together.
+    </p>
+  </aside>
+
+  <p>
+    After the sync fix: consistent 150 seconds per epoch, 11 epochs with early stopping,
+    <strong>31 minutes total</strong>. Accuracy reached <strong>95.3%</strong>. A 15× speedup
+    from eliminating queue pollution, not from raw compute.
+  </p>
+
+  <figure class="chart">
+    <div class="mini-pair">
+      <div>
+        <p>Training time</p>
+        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Training time comparison">
+          <rect x="100" y="10" width="240" height="22" rx="2" fill="#d97706" opacity="0.5"/>
+          <text x="96" y="25" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">128px · CPU</text>
+          <text x="346" y="25" font-family="JetBrains Mono" font-size="9" fill="#d97706">8 h</text>
+
+          <rect x="100" y="42" width="42" height="22" rx="2" fill="#16a34a" opacity="0.65"/>
+          <text x="96" y="57" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">domain aug</text>
+          <text x="148" y="57" font-family="JetBrains Mono" font-size="9" fill="#16a34a">84 min  MPS GPU</text>
+
+          <rect x="100" y="74" width="26" height="22" rx="2" fill="#16a34a" opacity="0.65"/>
+          <text x="96" y="89" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">bottleneck</text>
+          <text x="132" y="89" font-family="JetBrains Mono" font-size="9" fill="#16a34a">53 min  MPS GPU</text>
+
+          <rect x="100" y="106" width="16" height="22" rx="2" fill="#16a34a"/>
+          <text x="96" y="121" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">sync fix</text>
+          <text x="122" y="121" font-family="JetBrains Mono" font-size="9" fill="#16a34a">31 min  MPS GPU  ← breakthrough</text>
+        </svg>
+      </div>
+      <div>
+        <p>Model file size</p>
+        <svg viewBox="0 0 380 130" style="width:100%;height:auto" aria-label="Model size comparison">
+          <rect x="100" y="10" width="260" height="30" rx="2" fill="#d97706" opacity="0.45"/>
+          <text x="96" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">FP32 model</text>
+          <text x="366" y="30" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#d97706">34 MB</text>
+
+          <rect x="100" y="56" width="36" height="22" rx="2" fill="#ffd139" opacity="0.85"/>
+          <text x="96" y="71" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">bottleneck FP32</text>
+          <text x="142" y="71" font-family="JetBrains Mono" font-size="9" fill="#78600a">3.75 MB</text>
+
+          <rect x="100" y="90" width="9" height="22" rx="2" fill="#16a34a"/>
+          <text x="96" y="105" text-anchor="end" font-family="JetBrains Mono" font-size="9" fill="#7a7060">INT8 quantized</text>
+          <text x="115" y="105" font-family="JetBrains Mono" font-size="9" fill="#16a34a">938 KB  ← 97% smaller than original</text>
+        </svg>
+      </div>
+    </div>
+    <figcaption>
+      Speed and size, before and after. The training time chart is dominated by the original 8-hour
+      CPU baseline. The model size chart shows the 34 MB → 938 KB compression, achieved through a 1×1
+      convolution bottleneck and post-training INT8 quantization.
+    </figcaption>
+  </figure>
+
+  <div class="result-line">
+    <div class="result-cell"><div class="result-num">95.3%</div><div class="result-tag">test accuracy</div></div>
+    <div class="result-cell"><div class="result-num">31 min</div><div class="result-tag">training time</div></div>
+    <div class="result-cell"><div class="result-num neutral">34 MB</div><div class="result-tag">model size <em>still a problem</em></div></div>
+  </div>
+
+  <h2>III. 37× Smaller</h2>
+  <p class="dek">Architecture, then quantization</p>
+
+  <p>
+    A 34 MB model is a real deployment problem on a memory-constrained server. Profiling showed why
+    it was so large: a single fully connected layer projected the flattened 8×8 feature map (16,384
+    values) to 512 dimensions. That one layer held 95% of all the model parameters. Everything else
+    was rounding error.
+  </p>
+
+  <p>
+    The first idea to fix it was Global Average Pooling (GAP), which collapses the spatial grid into
+    a single vector by averaging across positions. Two separate attempts at this both failed at around
+    91%, a 4 percentage point drop. The reason was visible in the per-class breakdown: sun fell to 69%,
+    moon and bird also suffered badly. These classes rely on <em>where</em> features appear, not just
+    whether they exist. A sun has radial lines emanating from a center point. A bird has wings on the
+    sides. GAP averages all positions and destroys that information.
+  </p>
+
+  <p>
+    A 1×1 convolution bottleneck worked where GAP failed. It reduces the 256 feature channels down to
+    64 while keeping the 8×8 spatial grid completely intact. The fully connected layer then sees 4,096
+    values instead of 16,384. Parameter count fell from 8.8 million to 933,000. File size went from
+    34 MB to 3.75 MB. Accuracy stayed at 95.4%.
+  </p>
+
+  <p>
+    Post-training static quantization brought it the rest of the way. The process fuses each
+    Convolutional, Batch Normalization, and Rectified Linear Unit triplet into a single operation,
+    then runs a 1,010-sample calibration pass with worst-case classes over-represented to learn the
+    scale of each layer's activations. Weights convert from 32-bit floats to 8-bit integers.
+    Result: 3.75 MB to <strong>938 KB</strong>. Accuracy: 95.35% before quantization,
+    <strong>95.36% after</strong>. The quantization cost nothing.
+  </p>
+
+  <div class="result-line">
+    <div class="result-cell"><div class="result-num">95.36%</div><div class="result-tag">INT8 accuracy</div></div>
+    <div class="result-cell"><div class="result-num">938 KB</div><div class="result-tag">model size</div></div>
+    <div class="result-cell"><div class="result-num">1.03 ms</div><div class="result-tag">CPU latency per sample</div></div>
+  </div>
+
+  <h2>IV. The Test Set Was Lying</h2>
+  <p class="dek">Real world validation</p>
+
+  <p>
+    With 95.36% on the Quick Draw test set, the model looked finished. A spot check against tablet-drawn
+    sketches from the TU Berlin dataset told a different story: accuracy on those independent drawings
+    was around <strong>55%</strong>. The same model, evaluated on a harder distribution, failed more
+    than it passed.
+  </p>
+
+  <p>
+    The gap made sense. Quick Draw strokes are clean, thin, and drawn at a consistent speed with a mouse
+    or touchpad. Real canvas sketches have visible wobble from hand tremor, varying line weight from pen
+    pressure, and thicker strokes that sometimes bleed at corners. The model had been trained and tested
+    on the same clean distribution. Of course it scored well on the test set.
+  </p>
+
+  <p>
+    Closing the gap meant making training data look more like real drawings. The stroke rendering
+    pipeline was extended with three changes: stroke widths randomised between 3 and 8 pixels to match
+    the 7-pixel canvas brush, a cumulative Gaussian wobble applied perpendicular to each stroke tangent
+    to simulate hand tremor, and a small random morphological dilation or erosion as a proxy for pen
+    pressure variation.
+  </p>
+
+  <p>
+    On the Quick Draw test set, accuracy dropped from 95.36% to <strong>95.08%</strong>. That 0.28
+    percentage point drop looked like a regression. On 1,760 independent tablet-drawn sketches from
+    TU Berlin, accuracy went from 55.3% to <strong>78.6%</strong>, a 23 percentage point gain. Dog
+    improved by 50 points. Butterfly by 42 points. Guitar by 42 points. The model that appeared to
+    regress was the model that actually worked in the real world.
+  </p>
+
+  <aside class="callout">
+    <svg class="callout-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect x="0" y="0" width="100" height="100" fill="none" stroke="#ffd139" stroke-width="1" stroke-opacity="0.55" vector-effect="non-scaling-stroke" filter="url(#calloutframe)"/>
+    </svg>
+    <strong>The lesson</strong>
+    <p>
+      A test set is only as honest as its distribution is close to reality. The model that optimises
+      for the wrong metric will look great right up until someone tries it on a real canvas.
+      Distribution match matters more than chasing the number on a benchmark that does not represent
+      the actual use case.
+    </p>
+  </aside>
+
+  <div class="result-line">
+    <div class="result-cell"><div class="result-num">95.1%</div><div class="result-tag">Quick Draw test</div></div>
+    <div class="result-cell"><div class="result-num">78.6%</div><div class="result-tag">TU Berlin (+23pp)</div></div>
+    <div class="result-cell"><div class="result-num">938 KB</div><div class="result-tag">shipped model size</div></div>
+  </div>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>What the experiments taught us</h2>
+
+  <ol class="lessons">
+    <li>
+      <strong>Render native, not upscaled.</strong>
+      <span>
+        Upscaling a low-resolution training image creates a texture gap between blurry training data
+        and sharp inference inputs. The right fix is to render at the target resolution from the
+        original source, in this case raw stroke coordinates, not to interpolate bitmaps that were
+        never high quality to begin with.
+      </span>
+    </li>
+    <li>
+      <strong>Profile before optimising.</strong>
+      <span>
+        The GPU bottleneck was not the 8.4 million parameter matrix multiplication that was blamed
+        going in. It was 781 per-batch <code>.item()</code> calls forcing host/device queue drains,
+        with latency compounding nonlinearly. A single <code>torch.mps.synchronize()</code> call
+        between stages exposed it. The wrong diagnosis would have led to the wrong fix and cost weeks.
+      </span>
+    </li>
+    <li>
+      <strong>Global Average Pooling loses location.</strong>
+      <span>
+        Global Average Pooling collapses the entire spatial grid into a single vector, discarding
+        positional information. For sketch recognition, where features like the location of a wing
+        or the center of a radial burst are the signal, that information loss is fatal. A 1×1
+        convolution bottleneck shrinks channel depth without touching the spatial grid, and it works.
+      </span>
+    </li>
+    <li>
+      <strong>Your test set might be the wrong metric.</strong>
+      <span>
+        A clean benchmark hides generalization gaps when training and evaluation share the same
+        distribution. The augmentation that lost 0.28 percentage points on Quick Draw bought 23
+        percentage points on independent real-world drawings. External validation on a different
+        dataset is the only honest measure of whether a model is actually ready.
+      </span>
+    </li>
+  </ol>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>The model in action</h2>
+
+  <p>
+    Two interaction modes are live in the demo app. The first lets you draw with mouse or finger
+    on a canvas and watch the top-3 predictions update in real time. The second uses the camera:
+    point at a sketch on paper and the same model classifies it from a still frame.
+  </p>
+
+  <div class="demos">
+    <figure>
+      <img src="canvas-drawing.gif" alt="Canvas drawing mode. Sketch in the browser and watch the model predict in real time." loading="lazy">
+      <figcaption>Canvas, draw in browser</figcaption>
+    </figure>
+    <figure>
+      <img src="camera-drawing.gif" alt="Camera mode. Point at a hand-drawn sketch and get a live prediction." loading="lazy">
+      <figcaption>Camera, point at a sketch</figcaption>
+    </figure>
+  </div>
+
+  <p style="text-align:center;margin-top:1.4rem">
+    <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Open the live app →</a>
+  </p>
+
+  <div class="brushstroke-rule" aria-hidden="true"></div>
+
+  <h2>Final scorecard, shipping model</h2>
+  <p class="dek">All gates pass</p>
+
+  <table class="scorecard">
+    <thead>
+      <tr>
+        <th>Check</th>
+        <th>Gate</th>
+        <th>Actual</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Overall accuracy (8-bit integer weights)</td>
+        <td class="gate">≥ 94.5%</td>
+        <td class="actual">95.08%</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Worst single class accuracy</td>
+        <td class="gate">≥ 82.5%</td>
+        <td class="actual">84.45% (moon)</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Train and inference accuracy gap</td>
+        <td class="gate">≤ 1%</td>
+        <td class="actual">0.0%</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Accuracy loss from quantization</td>
+        <td class="gate">≤ 1pp per class</td>
+        <td class="actual">−0.75pp (dog)</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>CPU inference latency</td>
+        <td class="gate">&lt; 50 ms</td>
+        <td class="actual">0.98 ms per sample</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>Model file size</td>
+        <td class="gate">&lt; 1 MB</td>
+        <td class="actual">938 KB</td>
+        <td class="check">✓</td>
+      </tr>
+      <tr>
+        <td>External validation vs previous model</td>
+        <td class="gate">improve on TU Berlin</td>
+        <td class="actual">78.58% (+23.3pp)</td>
+        <td class="check">✓</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="architecture">
+    <strong>Architecture</strong>
+    SketchNet4PoolBottleneck. Four convolutional blocks (32, 64, 128, 256 filters) on 128×128 input,
+    a 1×1 convolution bottleneck reducing 256 channels to 64 while preserving the 8×8 spatial grid,
+    flatten to 4,096, Linear(128) with Dropout(0.3), Linear(25 classes). 933K parameters in 32-bit
+    floating point. Quantized to 8-bit integers using post-training static quantization. All training
+    from scratch. No pretrained weights, no fine tuning.
+  </p>
+
+</article>
+
+<footer>
+  <div class="essay">
+    <span class="footer-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      The Anh Nguyen
+    </span>
+    <span>
+      <a href="/">← Back to portfolio</a>
+      &nbsp;·&nbsp;
+      <a href="https://theanh.streamlit.app/sketchnet" target="_blank" rel="noopener">Live app</a>
+      &nbsp;·&nbsp;
+      <a href="https://github.com/theanh">GitHub</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

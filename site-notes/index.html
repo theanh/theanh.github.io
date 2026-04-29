@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes on building this site, by The Anh Nguyen</title>
+  <meta name="description" content="Design principles behind theanh.github.io. One SVG filter recipe applied to every painterly mark on the site.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f7f4ee;
+      --surface:   #faf8f3;
+      --paper:     #fbfaf6;
+      --border:    rgba(28,26,20,0.13);
+      --rule:      rgba(28,26,20,0.08);
+      --text:      #1c1a14;
+      --muted:     #7a7060;
+      --yellow:    #ffd139;
+      --theme:     rgba(255,209,57,0.5);
+      --blue:      #2563eb;
+      --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro", "Segoe UI", system-ui, sans-serif;
+      --font-body:    'Spectral', Georgia, "Times New Roman", serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+      --brushstroke:  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 240 6' preserveAspectRatio='none'><defs><filter id='b'><feTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' seed='3' result='n'/><feDisplacementMap in='SourceGraphic' in2='n' scale='1.2'/></filter><linearGradient id='g' x1='0' x2='1'><stop offset='0' stop-color='%231c1a14' stop-opacity='0.05'/><stop offset='0.2' stop-color='%231c1a14' stop-opacity='0.32'/><stop offset='0.8' stop-color='%231c1a14' stop-opacity='0.28'/><stop offset='1' stop-color='%231c1a14' stop-opacity='0.05'/></linearGradient></defs><rect x='0' y='2' width='240' height='2' fill='url(%23g)' filter='url(%23b)'/></svg>");
+    }
+
+    html { scroll-behavior: smooth; scroll-padding-top: 64px; color-scheme: light; }
+    body { font-family: var(--font-body); background: var(--bg); color: var(--text); font-size: 19px; line-height: 1.65; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+    h1, h2, h3 { text-wrap: balance; font-family: var(--font-display); }
+    h1 { font-size: 2.4rem; font-weight: 700; letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 0.5rem; }
+    h2 { font-size: 1.35rem; font-weight: 700; letter-spacing: -0.015em; margin: 0 0 0.85rem; }
+    h3 { font-size: 1rem; font-weight: 600; margin: 1.2rem 0 0.5rem; }
+    p { margin-bottom: 1rem; }
+    p:last-child { margin-bottom: 0; }
+    strong { font-weight: 600; }
+    em { font-style: italic; color: var(--muted); }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    a:visited { color: var(--muted); }
+    .nav-links a:visited, .footer-links a:visited { color: var(--muted); }
+
+    *:focus { outline: none; }
+    *:focus-visible { outline: 2px solid var(--theme); outline-offset: 3px; border-radius: 2px; }
+
+    /* Nav */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(247,244,238,0.93); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 0;
+    }
+    nav .wrap { display: flex; align-items: center; gap: 1.5rem; }
+    .nav-brand {
+      font-family: var(--font-display); font-size: 0.95rem; font-weight: 600;
+      letter-spacing: -0.005em; color: var(--text); white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 9px;
+    }
+    .seal { display: block; flex-shrink: 0; }
+    .nav-brand .seal { width: 26px; height: 26px; }
+    .nav-links { display: flex; gap: 1.25rem; margin-left: auto; }
+    .nav-links a { font-size: 0.78rem; font-weight: 500; color: var(--muted); letter-spacing: 0.02em; transition: color 120ms ease-out; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 56px 0 32px; position: relative; }
+    .hero::after {
+      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+      width: 240px; height: 6px; bottom: 0;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%; background-repeat: no-repeat;
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 0.85rem;
+    }
+    .hero-sub {
+      font-size: 1.1rem; color: var(--muted); line-height: 1.55;
+      font-style: italic; margin-top: 0.5rem;
+    }
+
+    /* Article sections */
+    article section { padding: 36px 0; position: relative; }
+    article section:not(:last-of-type)::after {
+      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+      width: 240px; height: 6px; bottom: 0;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%; background-repeat: no-repeat;
+      pointer-events: none;
+    }
+
+    /* Exhibit blocks */
+    .exhibit {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px 14px 6px 16px;
+      padding: 28px 24px;
+      margin: 18px 0;
+      display: flex; flex-direction: column; align-items: center;
+      gap: 14px;
+    }
+    .exhibit-caption {
+      font-family: var(--font-mono); font-size: 0.62rem;
+      letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted);
+    }
+    .exhibit-row {
+      display: flex; gap: 24px; align-items: center; justify-content: center;
+      flex-wrap: wrap; width: 100%;
+    }
+    .exhibit-item { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .exhibit-item-label { font-family: var(--font-mono); font-size: 0.58rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); }
+
+    /* Code */
+    pre {
+      background: #1c1a14; color: #e8dfc9;
+      font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.55;
+      padding: 18px 20px;
+      border-radius: 4px 12px 6px 14px;
+      overflow-x: auto;
+      margin: 14px 0;
+      width: 100%;
+    }
+    code {
+      font-family: var(--font-mono); font-size: 0.88em;
+      background: rgba(28,26,20,0.06);
+      padding: 1px 5px; border-radius: 3px;
+    }
+    pre code { background: transparent; padding: 0; }
+
+    /* Subheads inside Design elements */
+    article section h3 {
+      margin-top: 1.75rem;
+      font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+      letter-spacing: -0.005em;
+    }
+    article section h3:first-of-type { margin-top: 0.5rem; }
+
+    /* Study no. 1 (closing piece) */
+    article section.study { padding: 64px 0 56px; text-align: center; }
+    .study-meta {
+      font-family: var(--font-mono); font-size: 0.7rem;
+      letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted);
+      margin-bottom: 1.75rem;
+    }
+    .study-frame {
+      display: inline-block; position: relative;
+      padding: 32px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      border-radius: 4px 14px 6px 16px;
+      box-shadow: 6px 6px 0 rgba(28,26,20,0.04);
+      margin-bottom: 1.5rem;
+    }
+    .study-frame .painting { display: block; width: 320px; height: auto; }
+    .study-sig {
+      position: absolute; bottom: 14px; right: 14px;
+      opacity: 0.7;
+    }
+    .study-sig svg { width: 24px; height: 24px; display: block; }
+    .study-caption {
+      font-family: var(--font-body); font-style: italic;
+      font-size: 1.1rem; color: var(--text);
+      max-width: 540px; margin: 0 auto 0.75rem;
+      line-height: 1.55;
+    }
+    .study-note {
+      font-size: 0.95rem; color: var(--muted);
+      max-width: 540px; margin: 0 auto;
+      line-height: 1.55;
+    }
+    .study-note em { color: var(--text); font-style: italic; }
+
+    /* Divider exhibit */
+    .divider-large {
+      width: 100%; height: 24px;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%; background-repeat: no-repeat;
+    }
+
+    /* Frame exhibit */
+    .frame-demo {
+      position: relative; width: 220px; height: 140px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface);
+    }
+    .frame-demo .card-frame {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; overflow: visible;
+    }
+    .frame-demo-text {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--muted); letter-spacing: 0.05em;
+    }
+
+    /* Seal exhibit */
+    .seal-large { width: 120px; height: 120px; }
+    .seal-medium { width: 60px; height: 60px; }
+    .seal-small { width: 30px; height: 30px; }
+
+    /* Thumbnail exhibit */
+    .thumb-demo svg { width: 200px; height: auto; }
+
+    /* Footer */
+    footer {
+      padding: 36px 0 48px; position: relative;
+      border-top: 0;
+    }
+    footer::before {
+      content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+      width: 240px; height: 6px; top: 0;
+      background-image: var(--brushstroke);
+      background-size: 100% 100%; background-repeat: no-repeat;
+      pointer-events: none;
+    }
+    .footer-row {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 16px; flex-wrap: wrap;
+    }
+    .footer-meta { font-family: var(--font-mono); font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
+
+    @media (max-width: 720px) {
+      h1 { font-size: 2rem; }
+      .hero { padding: 40px 0 28px; }
+      .study-frame { padding: 24px; }
+      .study-frame .painting { width: 100%; max-width: 280px; }
+    }
+    @media (max-width: 480px) {
+      .nav-brand .brand-text { display: none; }
+      nav .wrap { gap: 0.75rem; }
+      .nav-links a { padding: 12px 6px; font-size: 0.78rem; }
+      .frame-demo { width: 180px; height: 120px; }
+      .exhibit { padding: 22px 16px; }
+      pre { font-size: 0.72rem; padding: 14px 12px; }
+    }
+  </style>
+
+  <script async src="/analytics.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a href="/" class="nav-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <filter id="sealedge" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/>
+          </filter>
+        </defs>
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      <span class="brand-text">The Anh Nguyen</span>
+    </a>
+    <div class="nav-links">
+      <a href="/">← Back to portfolio</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="hero-eyebrow">Notes · Frontend craft · Apr 2026</p>
+    <h1>Notes on building this site.</h1>
+    <p class="hero-sub">
+      Where the painterly aesthetic came from, how it works, and where it lives.
+    </p>
+  </div>
+</header>
+
+<article>
+  <div class="wrap">
+
+    <section>
+      <h2>Inspiring from</h2>
+      <p>
+        The reference was an AI-generated reel of impasto oil paintings. Thick textured strokes, off-center compositions, the same painter's hand across very different subjects. Not imitation. <em>Pick one technique, apply it consistently, let the texture do the work.</em>
+      </p>
+    </section>
+
+    <section>
+      <h2>Design approach</h2>
+      <p>
+        One SVG filter chain runs every painterly mark on the site. <code>feTurbulence</code> generates fractal noise. <code>feDisplacementMap</code> pushes pixels along it. Two primitives, three knobs, every painterly element on the page.
+      </p>
+<pre><code>&lt;filter id="paint"&gt;
+  &lt;feTurbulence type="fractalNoise"
+    baseFrequency="0.06" numOctaves="2"
+    seed="5" result="noise"/&gt;
+  &lt;feDisplacementMap in="SourceGraphic"
+    in2="noise" scale="4"/&gt;
+&lt;/filter&gt;</code></pre>
+      <p>
+        Three knobs to tune. <code>baseFrequency</code> sets noise density. <code>scale</code> controls push distance. <code>seed</code> picks the arrangement. Same seed renders the same wobble every time. Different seed gives variation that still reads as the same hand.
+      </p>
+      <div class="exhibit">
+        <div class="exhibit-row">
+          <div class="exhibit-item">
+            <svg width="160" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <rect x="6" y="10" width="148" height="60" fill="#ffd139" stroke="#1c1a14" stroke-width="1"/>
+            </svg>
+            <span class="exhibit-item-label">clean</span>
+          </div>
+          <div class="exhibit-item">
+            <svg width="160" height="80" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <filter id="demo-filter" x="-5%" y="-5%" width="110%" height="110%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.08" numOctaves="2" seed="7" result="n"/>
+                  <feDisplacementMap in="SourceGraphic" in2="n" scale="4"/>
+                </filter>
+              </defs>
+              <rect x="6" y="10" width="148" height="60" fill="#ffd139" stroke="#1c1a14" stroke-width="1" filter="url(#demo-filter)"/>
+            </svg>
+            <span class="exhibit-item-label">displaced</span>
+          </div>
+        </div>
+        <span class="exhibit-caption">Same rectangle. One filter chain.</span>
+      </div>
+      <p>
+        The brushstroke itself sits in one CSS custom property as a data URI. Sections, hero, and footer reference it through <code>background-image</code>. Change the seed once, the whole page shifts. <em>Single source of truth.</em>
+      </p>
+    </section>
+
+    <section>
+      <h2>Design elements</h2>
+
+      <h3>Seal</h3>
+      <p>
+        A circle plus the letters TA in Spectral, both routed through the filter. 26 px in the nav, 30 px in the footer. At display size the wobble reads as pressed by hand, not generated.
+      </p>
+      <div class="exhibit">
+        <div class="exhibit-row">
+          <div class="exhibit-item">
+            <svg class="seal-large" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <defs>
+                <filter id="seal-l" x="-5%" y="-5%" width="110%" height="110%">
+                  <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+                  <feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/>
+                </filter>
+              </defs>
+              <g filter="url(#seal-l)">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+                <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+              </g>
+            </svg>
+            <span class="exhibit-item-label">120 px</span>
+          </div>
+          <div class="exhibit-item">
+            <svg class="seal-medium" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g filter="url(#seal-l)">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+                <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+              </g>
+            </svg>
+            <span class="exhibit-item-label">60 px</span>
+          </div>
+          <div class="exhibit-item">
+            <svg class="seal-small" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <g filter="url(#seal-l)">
+                <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+                <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+              </g>
+            </svg>
+            <span class="exhibit-item-label">30 px</span>
+          </div>
+        </div>
+        <span class="exhibit-caption">Same SVG, three rendered sizes</span>
+      </div>
+
+      <h3>Card frame</h3>
+      <p>
+        A single <code>&lt;rect&gt;</code> with painterly stroke. <code>preserveAspectRatio="none"</code> lets the frame stretch to any wrapping rectangle. <code>vector-effect="non-scaling-stroke"</code> keeps the stroke uniform under that stretch. Different <code>seed</code> per card, so frames feel like siblings, not duplicates.
+      </p>
+      <div class="exhibit">
+        <div class="frame-demo">
+          <svg class="card-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <filter id="demo-frame" x="-3%" y="-3%" width="106%" height="106%">
+                <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="7" stitchTiles="stitch" result="n"/>
+                <feDisplacementMap in="SourceGraphic" in2="n" scale="0.6"/>
+              </filter>
+            </defs>
+            <rect x="0" y="0" width="100" height="100" fill="none" stroke="#ffd139" stroke-width="0.5" stroke-opacity="0.8" vector-effect="non-scaling-stroke" filter="url(#demo-frame)"/>
+          </svg>
+          <span class="frame-demo-text">FEATURED</span>
+        </div>
+        <span class="exhibit-caption">Stretches to any aspect ratio</span>
+      </div>
+
+      <h3>Brushstroke divider</h3>
+      <p>
+        A 240-wide gradient rectangle through the same filter at higher displacement. The same data URI that draws the section endings on every page.
+      </p>
+      <div class="exhibit">
+        <div class="divider-large"></div>
+        <span class="exhibit-caption">--brushstroke (zoomed in)</span>
+      </div>
+
+      <h3>Thumbnail mark</h3>
+      <p>
+        Wavy line, ochre triangle, water-blue circle, X. Stronger displacement (<code>scale=1.4</code>) so the lines read as doodled at small size, not drawn cleanly. The only thumbnail on the index, because the project trains on Quick Draw doodles.
+      </p>
+      <div class="exhibit thumb-demo">
+        <svg viewBox="0 0 140 44" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <filter id="thumbpaint-x" x="-5%" y="-5%" width="110%" height="110%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.55" numOctaves="2" seed="9" stitchTiles="stitch" result="n"/>
+              <feDisplacementMap in="SourceGraphic" in2="n" scale="1.4"/>
+            </filter>
+          </defs>
+          <g filter="url(#thumbpaint-x)" stroke="#1c1a14" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+            <path d="M 8 24 Q 16 14 24 24 T 40 24"/>
+            <polygon points="60,12 74,30 46,30" fill="#ffd139" fill-opacity="0.55"/>
+            <circle cx="100" cy="22" r="10" fill="#7a9faa" fill-opacity="0.4"/>
+            <path d="M 116 16 L 132 30 M 132 16 L 116 30"/>
+          </g>
+        </svg>
+        <span class="exhibit-caption">Thematic tie-in: Quick Draw doodles</span>
+      </div>
+    </section>
+
+    <section class="study">
+      <p class="study-meta">Study no. 1 · 240 × 280 · April 2026</p>
+      <div class="study-frame">
+        <svg class="painting" viewBox="0 0 240 280" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs>
+            <filter id="paint" x="-5%" y="-5%" width="110%" height="115%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.06" numOctaves="2" seed="5" result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="4"/>
+            </filter>
+            <filter id="paint-rough" x="-5%" y="-5%" width="110%" height="115%">
+              <feTurbulence type="fractalNoise" baseFrequency="0.09" numOctaves="2" seed="11" result="noise"/>
+              <feDisplacementMap in="SourceGraphic" in2="noise" scale="6"/>
+            </filter>
+          </defs>
+          <rect x="6"   y="20"  width="226" height="46" fill="#e8dfc9" filter="url(#paint)"/>
+          <rect x="120" y="58"  width="80"  height="14" fill="#ffd139" filter="url(#paint-rough)"/>
+          <rect x="0"   y="82"  width="216" height="36" fill="#a6886a" filter="url(#paint)" opacity="0.9"/>
+          <rect x="40"  y="122" width="200" height="10" fill="#7a6248" filter="url(#paint-rough)"/>
+          <path d="M 0 152 Q 60 146 120 152 T 240 154 L 240 200 L 0 200 Z" fill="#2f4258" filter="url(#paint)"/>
+          <rect x="20"  y="206" width="180" height="6"  fill="#cdb88d" filter="url(#paint-rough)" opacity="0.7"/>
+          <path d="M 12 224 Q 80 220 160 226 T 232 224 L 232 250 L 12 250 Z" fill="#1c1a14" filter="url(#paint)"/>
+        </svg>
+        <span class="study-sig" aria-hidden="true">
+          <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+            <g filter="url(#seal-l)">
+              <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+              <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+            </g>
+          </svg>
+        </span>
+      </div>
+      <p class="study-caption">
+        Cream sky. Ochre sun. Warm landform. Dark ridge. Deep water. Foam. Ink shore.
+      </p>
+      <p class="study-note">
+        Seven flat rectangles and two paths. No gradients, no shading. The texture is the filter, nothing else. <em>The piece where the recipe was first worked out.</em>
+      </p>
+    </section>
+
+  </div>
+</article>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <span class="footer-meta">The Anh Nguyen · 2026</span>
+      <span class="footer-meta"><a href="/">← theanh.github.io</a></span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
