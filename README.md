@@ -61,7 +61,7 @@ See [theanh.github.io](https://theanh.github.io) for the long versions.
 
 ### Stack
 
-`Python` - `TypeScript` - `JavaScript` - `PHP` - `LLM` - `PyTorch` - `AWS (Athena - EMR - S3 - SQS - ElastiCache - Lambda - RDS)` - `Azure Data Warehouse` - `Apache Airflow` - `PySpark` - `Elasticsearch` - `MySQL` - `PostgreSQL` - `SQL Server` - `Cassandra` - `Laravel` - `Symfony` - `RESTful API` - `GraphQL` - `Docker` - `Terraform` - `ELK Stack`
+`Python` - `TypeScript` - `JavaScript` - `PHP` - `PyTorch` - `scikit-learn` - `XGBoost` - `LLM applications` - `AWS (Athena - EMR - S3 - SQS - ElastiCache - Lambda - RDS)` - `Azure Data Warehouse` - `Apache Airflow` - `PySpark` - `Elasticsearch` - `MySQL` - `PostgreSQL` - `SQL Server` - `Cassandra` - `Laravel` - `Symfony` - `RESTful API` - `GraphQL` - `Docker` - `Terraform` - `ELK Stack`
 
 Outside of work I explore machine learning from scratch (see SketchNet), experiment with AI agent architecture, travel, and read.
 
