@@ -48,7 +48,7 @@ AWS Certified Solutions Architect: Associate (July 2022).
 - **<8 h** data processing time
 
 **Leadership**
-- Engineering team grown from **3 to 7**, with 2 engineers later promoted
+- Grew my team from **3 to 7**, with 2 engineers later promoted
 
 ### Case studies
 
