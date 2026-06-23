@@ -214,7 +214,7 @@
       Which compression and runtime simplification strategies keep object identity and crayon style in
       a sketch-guided image-generation pipeline?
     </p>
-    <p class="byline">By The Anh Nguyen - Stable Diffusion 1.5 + ControlNet Scribble + fast sampling + crayon style adapter - controlled evaluation</p>
+    <p class="byline">By The Anh Nguyen - Stable Diffusion 1.5 + ControlNet Scribble + crayon LoRA + fast sampling - controlled evaluation</p>
   </header>
 
   <div class="metrics" aria-label="Headline findings">
@@ -242,6 +242,8 @@
       <dd>An image-text scoring model. Here it checks whether an output still looks like the named object and the crayon style.</dd>
       <dt>SVD</dt>
       <dd>Singular value decomposition, a math method for replacing one large table of learned model numbers with smaller pieces.</dd>
+      <dt>LoRA</dt>
+      <dd>Low-rank adaptation, a small trainable adapter. Here it carries the crayon style without retraining the whole image model.</dd>
       <dt>int4 / int8</dt>
       <dd>4-bit and 8-bit number formats. They store the model's learned numbers with fewer digits, which makes the model lighter but can change the image.</dd>
       <dt>PTQ</dt>
@@ -269,8 +271,8 @@
 
   <p>
     The baseline was v1: Stable Diffusion 1.5 as the image generator, ControlNet Scribble as the sketch
-    guide, latent consistency model sampling as a shortcut with fewer generation steps, and a rank-16
-    crayon low-rank adaptation, a small style adapter trained on 53 images. It passed the automatic
+    guide, a rank-16 crayon LoRA as the style adapter, and latent consistency model sampling as a
+    shortcut with fewer generation steps. The crayon LoRA was trained on 53 images. It passed the automatic
     score gates: CLIP style 25.2 and CLIP class 25.5. The visual grid became the real reference.
   </p>
 
