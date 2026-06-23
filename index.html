@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preload" as="font" type="font/woff2" href="https://fonts.gstatic.com/s/spectral/v15/rnCr-xNNww_2s0amA9M5knjsS_ul.woff2" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -419,6 +419,51 @@
         </svg>
         <div class="work-header">
           <div>
+            <h3 class="work-company">DoodleCraft</h3>
+            <div class="work-sub">A kid's sketch becomes crayon art - Stable Diffusion + ControlNet + fast sampling + a crayon style adapter</div>
+          </div>
+          <div class="work-right">
+            <div class="work-period">2026</div>
+          </div>
+        </div>
+        <p class="work-desc">A sketch-to-art pipeline for kids, served on a free CPU box. The story is the campaign to make it fast: compression either hurt quality or missed latency, while the defensible speed lever was pipeline shape, not weight math. The grid mattered more than the score.</p>
+        <div class="impact-row">
+          <div class="impact-stat">
+            <div class="impact-val">5</div>
+            <div class="impact-lbl">strategies tested</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-val">0.019</div>
+            <div class="impact-lbl">8-bit drift</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-val">89 s</div>
+            <div class="impact-lbl">warm latency, CPU</div>
+          </div>
+          <div class="impact-stat">
+            <div class="impact-val">$0</div>
+            <div class="impact-lbl">serving cost</div>
+          </div>
+        </div>
+        <div class="tech-chips">
+          <span class="tech-chip">Diffusers</span>
+          <span class="tech-chip">Stable Diffusion</span>
+          <span class="tech-chip">ControlNet</span>
+          <span class="tech-chip">Style adapter</span>
+          <span class="tech-chip">ONNX Runtime</span>
+        </div>
+        <div class="card-ctas">
+          <a class="btn btn-primary" href="/doodle-craft/">Read the case study -></a>
+          <a class="btn" href="https://theanh.streamlit.app/doodlecraft" target="_blank" rel="noopener">Try live demo</a>
+        </div>
+      </div>
+
+      <div class="work-card">
+        <svg class="card-frame" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect x="0" y="0" width="100" height="100" fill="none" stroke="#1c1a14" stroke-width="1" stroke-opacity="0.18" vector-effect="non-scaling-stroke" filter="url(#brushframe-ink)"/>
+        </svg>
+        <div class="work-header">
+          <div>
             <h3 class="work-company">SketchNet</h3>
             <div class="work-sub">CNN for hand-drawn sketches - 25 Quick Draw classes - trained from scratch</div>
           </div>
@@ -739,6 +784,7 @@
       <div class="footer-links">
         <a href="https://github.com/theanh" target="_blank" rel="noopener">GitHub</a>
         <a href="https://linkedin.com/in/the-anh" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="/doodle-craft/">DoodleCraft</a>
         <a href="/sketchnet">SketchNet</a>
         <a href="https://theanh.streamlit.app" target="_blank" rel="noopener">Demos</a>
         <a href="/site-notes">Site notes</a>
