@@ -16,7 +16,7 @@
     .standfirst { max-width: 640px; }
     .metrics {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       border-top: 1px solid var(--rule);
       border-bottom: 1px solid var(--rule);
       margin: 1.8rem 0 2.1rem;
@@ -219,19 +219,24 @@
 
   <div class="metrics" aria-label="Headline findings">
     <div class="metric">
+      <div class="metric-kicker">Style adapter</div>
+      <div class="metric-to">LoRA</div>
+      <div class="metric-label">crayon adapter</div>
+    </div>
+    <div class="metric">
+      <div class="metric-kicker">Style data</div>
+      <div class="metric-to">53</div>
+      <div class="metric-label">training images</div>
+    </div>
+    <div class="metric">
       <div class="metric-kicker">Strategies tested</div>
       <div class="metric-to">5</div>
-      <div class="metric-label">factorization, quantization, training, pipeline shape</div>
+      <div class="metric-label">compression, training, pipeline shape</div>
     </div>
     <div class="metric">
       <div class="metric-kicker">Score-passing rejects</div>
       <div class="metric-to">2</div>
-      <div class="metric-label">two candidates passed automatic scores and failed the grid</div>
-    </div>
-    <div class="metric">
-      <div class="metric-kicker">Image drift split</div>
-      <div class="metric-to">0.019 vs 0.234</div>
-      <div class="metric-label">8-bit rounding vs retraining only</div>
+      <div class="metric-label">automatic scores failed the grid</div>
     </div>
   </div>
 
