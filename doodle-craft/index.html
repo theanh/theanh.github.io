@@ -180,6 +180,8 @@
       .term-sheet dd:last-child { margin-bottom: 0; }
       .compact-table, .scorecard { font-size: 0.84rem; }
       .compact-table th:nth-child(2), .compact-table td:nth-child(2) { display: none; }
+      .metric-split th:nth-child(2), .metric-split td:nth-child(2) { display: table-cell; }
+      .metric-split th:nth-child(4), .metric-split td:nth-child(4) { display: none; }
     }
   </style>
   <script async src="../analytics.js"></script>
@@ -309,8 +311,8 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td>Quantize without retraining</td>
-        <td>The look stayed close to v1. It was the cleanest compression result.</td>
-        <td class="decision qualified">Qualified</td>
+        <td>Best image-preservation result: drift 0.019. It was the cleanest compression result.</td>
+        <td class="decision pass">Quality pass</td>
       </tr>
       <tr>
         <td>QAT<span class="term-note">quantization-aware training</span></td>
@@ -321,19 +323,20 @@
       <tr>
         <td>Pipeline shape</td>
         <td>Change steps, resolution, and VAE</td>
-        <td>Several settings passed the automatic checks. The side-by-side grid showed which one still kept the sketch readable.</td>
-        <td class="decision pass">Accept</td>
+        <td>Visually close to the v1 baseline.</td>
+        <td class="decision qualified">Potential path</td>
       </tr>
     </tbody>
   </table>
 
   <figure class="wide">
-    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against the same sketches.">
+    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against baseline columns.">
     <figcaption>
       Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
       waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
-      recovery becomes painterly.
+      recovery becomes painterly. Pipeline shape runs visually close to the canonical v1, worth
+      exploring.
     </figcaption>
   </figure>
 
@@ -347,9 +350,9 @@
   </p>
 
   <figure>
-    <img src="drift-decomp-grid.png" alt="Drift decomposition comparing the canonical v1 reference, 8-bit post-training quantization rounding-only output, and quantization-aware training fine-tuning-only output.">
+    <img src="drift-decomp-grid.png" alt="Drift decomposition comparing the v1 baseline, 8-bit post-training quantization rounding-only output, and quantization-aware training fine-tuning-only output.">
     <figcaption>
-      The v1 column is the same canonical reference used in every report figure. The PTQ column isolates
+      The v1 baseline is the reference for the drift split. The PTQ column isolates
       8-bit rounding. The QAT fine-tuning-only column isolates the training move before the final 8-bit
       rounding step. Fine-tuning alone already changes the texture.
     </figcaption>
@@ -413,8 +416,8 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td class="gate">preserve v1 look</td>
-        <td class="actual">closest compression result</td>
-        <td class="warn">QUALIFIED</td>
+        <td class="actual">drift 0.019; closest compression result</td>
+        <td class="check">PASS</td>
       </tr>
       <tr>
         <td>QAT<span class="term-note">quantization-aware training</span></td>
@@ -425,24 +428,21 @@
       <tr>
         <td>Pipeline shape</td>
         <td class="gate">grid still holds</td>
-        <td class="actual">qualified accept</td>
-        <td class="check">PASS</td>
+        <td class="actual">2 steps + full VAE qualified accept</td>
+        <td class="warn">QUALIFIED</td>
       </tr>
     </tbody>
   </table>
 
   <p>
-    The answer is narrow, and that is why it is useful. In this pipeline, quality-preserving compression
-    was harder than the automatic scores suggested. PTQ preserved style better than QAT. SVD cut the model
-    in the wrong place. Pipeline-shape changes were easier to defend because the grid kept the product
-    promise visible.
+    The answer is narrow, and that is why it is useful. In this pipeline, quality-preserving compression was harder than the automatic scores suggested. PTQ preserved style better than QAT. SVD cut the model in the wrong place. Pipeline-shape changes were easier to defend because the grid kept the product promise visible.
   </p>
 
   <p class="limits">
     <strong>Limits.</strong>
-    One pipeline. A 53-image style dataset. A small fixed evaluation set. Visual grid review, not a
-    formal child study. Latency numbers belong only inside matching hardware and protocol groups.
-    The result does not say compression cannot work. It says the grid has to say yes too.
+    One pipeline. A 53-image style dataset. An 8-sketch fixed evaluation set. Visual grid review,
+    not a formal child study. The result does not say compression cannot work. It says the grid has
+    to say yes too.
   </p>
 
   <p class="architecture">
@@ -451,8 +451,7 @@
     consistency model (LCM) sampling + rank-16 low-rank adaptation (LoRA) crayon adapter. Strategies
     tested: singular value decomposition (SVD), 4-bit integer (int4) conversion, 8-bit integer (int8)
     post-training quantization (PTQ), 8-bit quantization-aware training (QAT), and pipeline-shape sweeps
-    over steps, resolution, and variational autoencoder (VAE) choice. Source run journals remain the
-    source of truth.
+    over steps, resolution, and variational autoencoder (VAE) choice.
   </p>
 </article>
 
