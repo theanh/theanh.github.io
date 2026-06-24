@@ -180,8 +180,6 @@
       .term-sheet dd:last-child { margin-bottom: 0; }
       .compact-table, .scorecard { font-size: 0.84rem; }
       .compact-table th:nth-child(2), .compact-table td:nth-child(2) { display: none; }
-      .metric-split th:nth-child(2), .metric-split td:nth-child(2) { display: table-cell; }
-      .metric-split th:nth-child(4), .metric-split td:nth-child(4) { display: none; }
     }
   </style>
   <script async src="../analytics.js"></script>
@@ -330,7 +328,7 @@
   </table>
 
   <figure class="wide">
-    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against baseline columns.">
+    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against a canonical v1 baseline column.">
     <figcaption>
       Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
