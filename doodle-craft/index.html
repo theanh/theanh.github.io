@@ -37,6 +37,7 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
+      min-height: 3.3em;
     }
     .metric-to {
       font-family: var(--font-display);
@@ -78,6 +79,7 @@
       grid-template-columns: max-content 1fr;
       gap: 7px 15px;
       margin: 0;
+      align-items: baseline;
     }
     .term-sheet dt {
       font-family: var(--font-mono);
@@ -175,6 +177,7 @@
       .metric { border-right: 0; border-bottom: 1px solid var(--rule); padding: 14px 0; }
       .metric:last-child { border-bottom: 1px solid var(--rule); }
       .metric-to { font-size: 1.45rem; }
+      .metric-kicker { min-height: auto; }
       .term-sheet dl { grid-template-columns: 1fr; gap: 2px; }
       .term-sheet dd { margin-bottom: 9px; }
       .term-sheet dd:last-child { margin-bottom: 0; }
