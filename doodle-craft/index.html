@@ -311,7 +311,7 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td>Quantize without retraining</td>
-        <td>Best image-preservation result: drift 0.019. It was the cleanest compression result.</td>
+        <td>Best image-preservation result: drift 0.112. It was the cleanest compression result.</td>
         <td class="decision pass">Quality pass</td>
       </tr>
       <tr>
@@ -322,7 +322,7 @@
       </tr>
       <tr>
         <td>Pipeline shape</td>
-        <td>Change steps, resolution, and VAE</td>
+        <td>Change steps and resolution</td>
         <td>Visually close to the v1 baseline.</td>
         <td class="decision qualified">Potential path</td>
       </tr>
@@ -335,8 +335,8 @@
       Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
       waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
-      recovery becomes painterly. Pipeline shape runs visually close to the canonical v1, worth
-      exploring.
+      recovery becomes painterly. Pipeline shape's quick test lands close to the canonical v1, a
+      potential path Section III explores further.
     </figcaption>
   </figure>
 
@@ -368,9 +368,9 @@
   <p class="dek">Spend quality headroom, then check the grid</p>
 
   <p>
-    Pipeline shape was less glamorous than compression. Fewer steps, different resolution, full VAE
-    versus tiny VAE. But it asked a better question: how much headroom did v1 have before the drawing
-    stopped feeling like itself?
+    Pipeline shape was less glamorous than compression. Fewer steps, different resolution. But it
+    asked a better question: how much headroom did v1 have before the drawing stopped feeling like
+    itself?
   </p>
 
   <figure class="wide">
@@ -416,7 +416,7 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td class="gate">preserve v1 look</td>
-        <td class="actual">drift 0.019; closest compression result</td>
+        <td class="actual">drift 0.112; closest compression result</td>
         <td class="check">PASS</td>
       </tr>
       <tr>
@@ -428,7 +428,7 @@
       <tr>
         <td>Pipeline shape</td>
         <td class="gate">grid still holds</td>
-        <td class="actual">2 steps + full VAE qualified accept</td>
+        <td class="actual">512 holds visually; 384 shows visible drift</td>
         <td class="warn">QUALIFIED</td>
       </tr>
     </tbody>
