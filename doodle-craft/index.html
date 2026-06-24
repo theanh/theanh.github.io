@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%23ffd139'/><path d='M6 7h20v4h-8v14h-4V11H6z' fill='%231c1a14'/></svg>">
+  <title>CLIP Said Yes. The Crayon Said No., by The Anh Nguyen</title>
+  <meta name="description" content="A short research report on whether DoodleCraft compression and runtime changes preserve object identity and crayon style.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../case-study.css">
+  <style>
+    .essay { max-width: 720px; }
+    .essay-header { padding-bottom: 18px; }
+    .standfirst { max-width: 640px; }
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin: 1.8rem 0 2.1rem;
+    }
+    .metric { padding: 16px 6px; border-right: 1px solid var(--rule); }
+    .metric:last-child { border-right: 0; }
+    .metric-from {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: rgba(220,38,38,0.55);
+    }
+    .metric-kicker {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .metric-to {
+      font-family: var(--font-display);
+      font-size: 1.62rem;
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+      margin-top: 4px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .term-sheet {
+      border-top: 1px solid var(--rule);
+      border-bottom: 1px solid var(--rule);
+      margin: 1.2rem 0 1.7rem;
+      padding: 14px 0 12px;
+      font-size: 0.92rem;
+      color: var(--soft);
+    }
+    .term-sheet strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 0.64rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .term-sheet dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 7px 15px;
+      margin: 0;
+    }
+    .term-sheet dt {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      color: var(--text);
+      white-space: nowrap;
+    }
+    .term-sheet dd { margin: 0; }
+    .term-note {
+      display: block;
+      margin-top: 2px;
+      font-family: var(--font-body);
+      font-size: 0.78rem;
+      line-height: 1.35;
+      color: var(--muted);
+      white-space: normal;
+      text-transform: none;
+    }
+    .question {
+      border-left: 3px solid var(--yellow);
+      background: linear-gradient(90deg, var(--theme-soft), transparent 88%);
+      padding: 12px 16px 12px 18px;
+      margin: 1.3rem 0 1.6rem;
+      font-family: var(--font-body);
+      font-size: 1.02rem;
+      color: var(--soft);
+    }
+    .compact-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.2rem 0 1.4rem;
+      font-size: 0.92rem;
+    }
+    .compact-table th {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 10px 4px;
+      border-bottom: 2px solid var(--text);
+    }
+    .compact-table td {
+      padding: 10px 4px;
+      border-bottom: 1px solid var(--rule);
+      vertical-align: top;
+    }
+    .compact-table tr:last-child td { border-bottom: 2px solid var(--text); }
+    .compact-table .decision {
+      font-family: var(--font-mono);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .decision.reject { color: var(--red); }
+    .decision.pass { color: var(--green); }
+    .decision.qualified { color: var(--amber); }
+    figure img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: #fff;
+    }
+    figure.wide {
+      width: min(1040px, calc(100vw - 32px));
+      margin-left: 50%;
+      transform: translateX(-50%);
+    }
+    figcaption { font-size: 0.88rem; }
+    .scorecard { margin: 1.1rem 0 1.4rem; font-size: 0.92rem; }
+    .scorecard th { padding: 10px 4px; font-size: 0.62rem; }
+    .scorecard td { padding: 10px 4px; }
+    .scorecard td.gate, .scorecard td.actual {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .scorecard td.gate { color: var(--muted); }
+    .scorecard td.check { color: var(--green); font-size: 1rem; text-align: right; width: 42px; }
+    .scorecard td.cross { color: var(--red); font-size: 1rem; text-align: right; width: 42px; }
+    .scorecard td.warn { color: var(--amber); font-size: 1rem; text-align: right; width: 78px; }
+    .limits {
+      font-size: 0.95rem;
+      color: var(--soft);
+      border-top: 1px solid var(--rule);
+      padding-top: 1rem;
+      margin-top: 1.2rem;
+    }
+    @media (max-width: 680px) {
+      .metrics { grid-template-columns: 1fr; border-bottom: 0; }
+      .metric { border-right: 0; border-bottom: 1px solid var(--rule); padding: 14px 0; }
+      .metric:last-child { border-bottom: 1px solid var(--rule); }
+      .metric-to { font-size: 1.45rem; }
+      .term-sheet dl { grid-template-columns: 1fr; gap: 2px; }
+      .term-sheet dd { margin-bottom: 9px; }
+      .term-sheet dd:last-child { margin-bottom: 0; }
+      .compact-table, .scorecard { font-size: 0.84rem; }
+      .compact-table th:nth-child(2), .compact-table td:nth-child(2) { display: none; }
+    }
+  </style>
+  <script async src="../analytics.js"></script>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="essay">
+    <a href="../" class="masthead-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <defs>
+          <filter id="sealedge" x="-5%" y="-5%" width="110%" height="110%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="2" seed="4" stitchTiles="stitch" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="0.8"/>
+          </filter>
+        </defs>
+        <g filter="url(#sealedge)">
+          <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+          <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14" letter-spacing="-0.5">TA</text>
+        </g>
+      </svg>
+      The Anh Nguyen
+    </a>
+  </div>
+</header>
+
+<article class="essay">
+  <header class="essay-header">
+    <p class="kicker">Research note - Machine learning - June 2026</p>
+    <h1>CLIP Said Yes. The Crayon Said No.</h1>
+    <p class="standfirst">
+      Which compression and runtime simplification strategies keep object identity and crayon style in
+      a sketch-guided image-generation pipeline?
+    </p>
+    <p class="byline">By The Anh Nguyen - Stable Diffusion 1.5 + ControlNet Scribble + crayon LoRA + fast sampling - controlled evaluation</p>
+  </header>
+
+  <div class="metrics" aria-label="Headline findings">
+    <div class="metric">
+      <div class="metric-kicker">Style adapter</div>
+      <div class="metric-to">LoRA</div>
+      <div class="metric-label">crayon adapter</div>
+    </div>
+    <div class="metric">
+      <div class="metric-kicker">Style data</div>
+      <div class="metric-to">53</div>
+      <div class="metric-label">training images</div>
+    </div>
+    <div class="metric">
+      <div class="metric-kicker">Strategies tested</div>
+      <div class="metric-to">5</div>
+      <div class="metric-label">compression, training, pipeline shape</div>
+    </div>
+    <div class="metric">
+      <div class="metric-kicker">Score-passing rejects</div>
+      <div class="metric-to">2</div>
+      <div class="metric-label">automatic scores failed the grid</div>
+    </div>
+  </div>
+
+  <aside class="term-sheet" aria-label="Abbreviation guide">
+    <strong>Abbreviation guide</strong>
+    <dl>
+      <dt>CLIP</dt>
+      <dd>An image-text scoring model. Here it checks whether an output still looks like the named object and the crayon style.</dd>
+      <dt>SVD</dt>
+      <dd>Singular value decomposition, a math method for replacing one large table of learned model numbers with smaller pieces.</dd>
+      <dt>LoRA</dt>
+      <dd>Low-rank adaptation, a small trainable adapter. Here it carries the crayon style without retraining the whole image model.</dd>
+      <dt>int4 / int8</dt>
+      <dd>4-bit and 8-bit number formats. They store the model's learned numbers with fewer digits, which makes the model lighter but can change the image.</dd>
+      <dt>PTQ</dt>
+      <dd>Post-training quantization. Quantize the already-trained model without teaching it again.</dd>
+      <dt>QAT</dt>
+      <dd>Quantization-aware training. Retrain while simulating the rounding noise from quantization.</dd>
+      <dt>VAE</dt>
+      <dd>Variational autoencoder, the decoder that turns the model's hidden image representation into pixels.</dd>
+    </dl>
+  </aside>
+
+  <p class="lede">
+    <span class="drop-cap">T</span>he first instinct was to make the model smaller. Singular value
+    decomposition, 4-bit quantization, 8-bit quantization, quantization-aware training. All the normal
+    tools were on the table. The catch was the product promise: a child's drawing should come back as
+    the same drawing, rendered in wax crayon.
+  </p>
+
+  <div class="question">
+    <strong>Evaluation rule.</strong>
+    Quality first. A candidate had to preserve object identity, sketch structure, and crayon texture
+    on the fixed grid before any speed, size, or latency claim counted. The report figures use one
+    canonical v1 reference column so the reader can compare candidates against the same baseline.
+  </div>
+
+  <p>
+    The baseline was v1: Stable Diffusion 1.5 as the image generator, ControlNet Scribble as the sketch
+    guide, a rank-16 crayon LoRA as the style adapter, and latent consistency model sampling as a
+    shortcut with fewer generation steps. The crayon LoRA was trained on 53 images. It passed the automatic
+    score gates: CLIP style 25.2 and CLIP class 25.5. The visual grid became the real reference.
+  </p>
+
+  <h2>I. The Comparison</h2>
+  <p class="dek">Five strategies, one visual standard</p>
+
+  <table class="compact-table">
+    <thead>
+      <tr>
+        <th>Strategy</th>
+        <th>What it tried</th>
+        <th>What happened</th>
+        <th>Decision</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>SVD<span class="term-note">singular value decomposition</span></td>
+        <td>Split attention layers into smaller pieces</td>
+        <td>CLIP recovered after fine-tuning. The images became muddy and painterly.</td>
+        <td class="decision reject">Reject</td>
+      </tr>
+      <tr>
+        <td>Int4<span class="term-note">4-bit quantization</span></td>
+        <td>Make the exported model smaller</td>
+        <td>The low-level math check passed. The size and final-image checks failed.</td>
+        <td class="decision reject">Reject</td>
+      </tr>
+      <tr>
+        <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
+        <td>Quantize without retraining</td>
+        <td>The look stayed close to v1. It was the cleanest compression result.</td>
+        <td class="decision qualified">Qualified</td>
+      </tr>
+      <tr>
+        <td>QAT<span class="term-note">quantization-aware training</span></td>
+        <td>Train around 8-bit rounding noise</td>
+        <td>CLIP passed. The medium shifted from crayon toward pastel.</td>
+        <td class="decision reject">Reject</td>
+      </tr>
+      <tr>
+        <td>Pipeline shape</td>
+        <td>Change steps, resolution, and VAE</td>
+        <td>Several settings passed the automatic checks. The side-by-side grid showed which one still kept the sketch readable.</td>
+        <td class="decision pass">Accept</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <figure class="wide">
+    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against the same sketches.">
+    <figcaption>
+      Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
+      run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
+      waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
+      recovery becomes painterly.
+    </figcaption>
+  </figure>
+
+  <h2>II. Fine-Tuning Moved The Style</h2>
+  <p class="dek">Quantization-aware training moved the style; 8-bit rounding did not</p>
+
+  <p>
+    The surprising number was not a CLIP score. It was the image-drift split: 0.019 from
+    8-bit rounding versus 0.234 from fine-tuning. Rounding barely moved the image.
+    Fine-tuning moved the medium.
+  </p>
+
+  <figure>
+    <img src="drift-decomp-grid.png" alt="Drift decomposition comparing the canonical v1 reference, 8-bit post-training quantization rounding-only output, and quantization-aware training fine-tuning-only output.">
+    <figcaption>
+      The v1 column is the same canonical reference used in every report figure. The PTQ column isolates
+      8-bit rounding. The QAT fine-tuning-only column isolates the training move before the final 8-bit
+      rounding step. Fine-tuning alone already changes the texture.
+    </figcaption>
+  </figure>
+
+  <p>
+    That changed the interpretation of the compression ladder. QAT sounded like the careful path:
+    expose the model to quantization noise, let it compensate, then export. In this pipeline,
+    compensation rewrote the style. The class still read correctly. The medium changed.
+  </p>
+
+  <h2>III. Changing The Run Was Safer Than Changing The Weights</h2>
+  <p class="dek">Spend quality headroom, then check the grid</p>
+
+  <p>
+    Pipeline shape was less glamorous than compression. Fewer steps, different resolution, full VAE
+    versus tiny VAE. But it asked a better question: how much headroom did v1 have before the drawing
+    stopped feeling like itself?
+  </p>
+
+  <figure class="wide">
+    <img src="pipeline-sweep-grid.png" alt="Pipeline shape sweep comparing v1 baseline against lower-step and lower-resolution settings.">
+    <figcaption>
+      The v1 column is the same canonical reference used above. The other columns spend quality headroom
+      by reducing steps or resolution. The sweep did not crown the most aggressive setting. It showed
+      which simplifications the visual grid could still defend.
+    </figcaption>
+  </figure>
+
+  <h2>IV. What Holds</h2>
+  <p class="dek">Automatic scores filter. Visual grids decide.</p>
+
+  <p>
+    CLIP was useful. It caught obvious failures and kept the comparison cheap. It was not the judge.
+    The judge was the grid, because the promise was not a high CLIP crayon score. The promise was:
+    my drawing came back as crayon art.
+  </p>
+
+  <table class="scorecard">
+    <thead>
+      <tr>
+        <th>Check</th>
+        <th>Gate</th>
+        <th>Observed</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Baseline quality</td>
+        <td class="gate">CLIP style &ge; 22, CLIP class &ge; 24</td>
+        <td class="actual">v1 passes</td>
+        <td class="check">PASS</td>
+      </tr>
+      <tr>
+        <td>SVD recovery<span class="term-note">singular value decomposition</span></td>
+        <td class="gate">preserve crayon</td>
+        <td class="actual">muddy, painterly</td>
+        <td class="cross">FAIL</td>
+      </tr>
+      <tr>
+        <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
+        <td class="gate">preserve v1 look</td>
+        <td class="actual">closest compression result</td>
+        <td class="warn">QUALIFIED</td>
+      </tr>
+      <tr>
+        <td>QAT<span class="term-note">quantization-aware training</span></td>
+        <td class="gate">preserve crayon after training</td>
+        <td class="actual">pastel drift</td>
+        <td class="cross">FAIL</td>
+      </tr>
+      <tr>
+        <td>Pipeline shape</td>
+        <td class="gate">grid still holds</td>
+        <td class="actual">qualified accept</td>
+        <td class="check">PASS</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>
+    The answer is narrow, and that is why it is useful. In this pipeline, quality-preserving compression
+    was harder than the automatic scores suggested. PTQ preserved style better than QAT. SVD cut the model
+    in the wrong place. Pipeline-shape changes were easier to defend because the grid kept the product
+    promise visible.
+  </p>
+
+  <p class="limits">
+    <strong>Limits.</strong>
+    One pipeline. A 53-image style dataset. A small fixed evaluation set. Visual grid review, not a
+    formal child study. Latency numbers belong only inside matching hardware and protocol groups.
+    The result does not say compression cannot work. It says the grid has to say yes too.
+  </p>
+
+  <p class="architecture">
+    <strong>Technical record</strong>
+    Baseline: Stable Diffusion 1.5 (SD1.5) image generator + ControlNet Scribble sketch guide + latent
+    consistency model (LCM) sampling + rank-16 low-rank adaptation (LoRA) crayon adapter. Strategies
+    tested: singular value decomposition (SVD), 4-bit integer (int4) conversion, 8-bit integer (int8)
+    post-training quantization (PTQ), 8-bit quantization-aware training (QAT), and pipeline-shape sweeps
+    over steps, resolution, and variational autoencoder (VAE) choice. Source run journals remain the
+    source of truth.
+  </p>
+</article>
+
+<footer>
+  <div class="essay">
+    <span class="footer-brand">
+      <svg class="seal" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="20" cy="20" r="17" fill="none" stroke="#1c1a14" stroke-width="1.5"/>
+        <text x="20" y="25" text-anchor="middle" font-family="Spectral, Georgia, serif" font-size="14" font-weight="600" fill="#1c1a14">TA</text>
+      </svg>
+      The Anh Nguyen
+    </span>
+    <span><a href="../">Portfolio</a></span>
+  </div>
+</footer>
+
+</body>
+</html>
