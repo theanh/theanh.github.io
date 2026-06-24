@@ -309,7 +309,7 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td>Quantize without retraining</td>
-        <td>The look stayed close to v1. It was the cleanest compression result.</td>
+        <td>Best image-preservation result: drift 0.112. It was the cleanest compression result.</td>
         <td class="decision qualified">Qualified</td>
       </tr>
       <tr>
@@ -320,20 +320,20 @@
       </tr>
       <tr>
         <td>Pipeline shape</td>
-        <td>Change steps, resolution, and VAE</td>
-        <td>Several settings passed the automatic checks. The side-by-side grid showed which one still kept the sketch readable.</td>
+        <td>Change steps and resolution</td>
+        <td>Matches the v1 baseline directly.</td>
         <td class="decision pass">Accept</td>
       </tr>
     </tbody>
   </table>
 
   <figure class="wide">
-    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against the same sketches.">
+    <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against a canonical v1 baseline column.">
     <figcaption>
       Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
       waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
-      recovery becomes painterly.
+      recovery becomes painterly. Pipeline shape matches the canonical v1 column directly.
     </figcaption>
   </figure>
 
@@ -346,10 +346,16 @@
     Fine-tuning moved the medium.
   </p>
 
+  <p>
+    Rounding alone was never shippable. It only runs without the int8 math here, to isolate the cost.
+    The real candidate, the one that actually runs end to end in int8, is Section I's Int8 PTQ at
+    drift 0.112.
+  </p>
+
   <figure>
-    <img src="drift-decomp-grid.png" alt="Drift decomposition comparing the canonical v1 reference, 8-bit post-training quantization rounding-only output, and quantization-aware training fine-tuning-only output.">
+    <img src="drift-decomp-grid.png" alt="Drift decomposition comparing the v1 baseline, 8-bit post-training quantization rounding-only output, and quantization-aware training fine-tuning-only output.">
     <figcaption>
-      The v1 column is the same canonical reference used in every report figure. The PTQ column isolates
+      The v1 baseline is the reference for the drift split. The PTQ column isolates
       8-bit rounding. The QAT fine-tuning-only column isolates the training move before the final 8-bit
       rounding step. Fine-tuning alone already changes the texture.
     </figcaption>
@@ -365,9 +371,9 @@
   <p class="dek">Spend quality headroom, then check the grid</p>
 
   <p>
-    Pipeline shape was less glamorous than compression. Fewer steps, different resolution, full VAE
-    versus tiny VAE. But it asked a better question: how much headroom did v1 have before the drawing
-    stopped feeling like itself?
+    Pipeline shape was less glamorous than compression. Fewer steps, different resolution. But it
+    asked a better question: how much headroom did v1 have before the drawing stopped feeling like
+    itself?
   </p>
 
   <figure class="wide">
@@ -413,7 +419,7 @@
       <tr>
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td class="gate">preserve v1 look</td>
-        <td class="actual">closest compression result</td>
+        <td class="actual">drift 0.112; closest compression result</td>
         <td class="warn">QUALIFIED</td>
       </tr>
       <tr>
@@ -425,24 +431,21 @@
       <tr>
         <td>Pipeline shape</td>
         <td class="gate">grid still holds</td>
-        <td class="actual">qualified accept</td>
+        <td class="actual">matches v1 directly; 384 still shows visible drift</td>
         <td class="check">PASS</td>
       </tr>
     </tbody>
   </table>
 
   <p>
-    The answer is narrow, and that is why it is useful. In this pipeline, quality-preserving compression
-    was harder than the automatic scores suggested. PTQ preserved style better than QAT. SVD cut the model
-    in the wrong place. Pipeline-shape changes were easier to defend because the grid kept the product
-    promise visible.
+    The answer is narrow, and that is why it is useful. In this pipeline, quality-preserving compression was harder than the automatic scores suggested. PTQ preserved style better than QAT. SVD cut the model in the wrong place. Pipeline-shape changes were easier to defend because the grid kept the product promise visible.
   </p>
 
   <p class="limits">
     <strong>Limits.</strong>
-    One pipeline. A 53-image style dataset. A small fixed evaluation set. Visual grid review, not a
-    formal child study. Latency numbers belong only inside matching hardware and protocol groups.
-    The result does not say compression cannot work. It says the grid has to say yes too.
+    One pipeline. A 53-image style dataset. An 8-sketch fixed evaluation set. Visual grid review,
+    not a formal child study. The result does not say compression cannot work. It says the grid has
+    to say yes too.
   </p>
 
   <p class="architecture">
@@ -451,8 +454,7 @@
     consistency model (LCM) sampling + rank-16 low-rank adaptation (LoRA) crayon adapter. Strategies
     tested: singular value decomposition (SVD), 4-bit integer (int4) conversion, 8-bit integer (int8)
     post-training quantization (PTQ), 8-bit quantization-aware training (QAT), and pipeline-shape sweeps
-    over steps, resolution, and variational autoencoder (VAE) choice. Source run journals remain the
-    source of truth.
+    over steps, resolution, and variational autoencoder (VAE) choice.
   </p>
 </article>
 
