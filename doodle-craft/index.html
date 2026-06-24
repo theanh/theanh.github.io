@@ -310,7 +310,7 @@
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td>Quantize without retraining</td>
         <td>Best image-preservation result: drift 0.112. It was the cleanest compression result.</td>
-        <td class="decision pass">Quality pass</td>
+        <td class="decision qualified">Qualified</td>
       </tr>
       <tr>
         <td>QAT<span class="term-note">quantization-aware training</span></td>
@@ -321,8 +321,8 @@
       <tr>
         <td>Pipeline shape</td>
         <td>Change steps and resolution</td>
-        <td>Visually close to the v1 baseline.</td>
-        <td class="decision qualified">Potential path</td>
+        <td>Matches the v1 baseline directly.</td>
+        <td class="decision pass">Accept</td>
       </tr>
     </tbody>
   </table>
@@ -333,8 +333,7 @@
       Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
       waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
-      recovery becomes painterly. Pipeline shape's quick test lands close to the canonical v1, a
-      potential path Section III explores further.
+      recovery becomes painterly. Pipeline shape matches the canonical v1 column directly.
     </figcaption>
   </figure>
 
@@ -345,6 +344,12 @@
     The surprising number was not a CLIP score. It was the image-drift split: 0.019 from
     8-bit rounding versus 0.234 from fine-tuning. Rounding barely moved the image.
     Fine-tuning moved the medium.
+  </p>
+
+  <p>
+    Rounding alone was never shippable. It only runs without the int8 math here, to isolate the cost.
+    The real candidate, the one that actually runs end to end in int8, is Section I's Int8 PTQ at
+    drift 0.112.
   </p>
 
   <figure>
@@ -415,7 +420,7 @@
         <td>Int8 PTQ<span class="term-note">8-bit post-training quantization</span></td>
         <td class="gate">preserve v1 look</td>
         <td class="actual">drift 0.112; closest compression result</td>
-        <td class="check">PASS</td>
+        <td class="warn">QUALIFIED</td>
       </tr>
       <tr>
         <td>QAT<span class="term-note">quantization-aware training</span></td>
@@ -426,8 +431,8 @@
       <tr>
         <td>Pipeline shape</td>
         <td class="gate">grid still holds</td>
-        <td class="actual">512 holds visually; 384 shows visible drift</td>
-        <td class="warn">QUALIFIED</td>
+        <td class="actual">matches v1 directly; 384 still shows visible drift</td>
+        <td class="check">PASS</td>
       </tr>
     </tbody>
   </table>
