@@ -172,6 +172,54 @@
       padding-top: 1rem;
       margin-top: 1.2rem;
     }
+    .before-after {
+      display: grid;
+      grid-template-columns: minmax(0,1fr) auto minmax(0,1fr);
+      align-items: start;
+      gap: 14px;
+      margin: 1.5rem 0 1.6rem;
+    }
+    .before-after .ba-item { margin: 0; min-width: 0; }
+    .before-after img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: #000;
+    }
+    .before-after .ba-label {
+      display: block;
+      margin-top: 8px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .before-after .ba-arrow {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--muted);
+      align-self: center;
+      margin-top: -18px;
+    }
+    .before-after figcaption { grid-column: 1 / -1; margin-top: 2px; }
+    .demo-reel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 1.4rem 0 1.7rem;
+    }
+    .demo-reel video {
+      width: 100%;
+      height: auto;
+      display: block;
+      border: 1px solid var(--rule);
+      border-radius: 2px;
+      background: #000;
+    }
+    .demo-reel figcaption { grid-column: 1 / -1; margin-top: 4px; }
     @media (max-width: 680px) {
       .metrics { grid-template-columns: 1fr; border-bottom: 0; }
       .metric { border-right: 0; border-bottom: 1px solid var(--rule); padding: 14px 0; }
@@ -183,6 +231,9 @@
       .term-sheet dd:last-child { margin-bottom: 0; }
       .compact-table, .scorecard { font-size: 0.84rem; }
       .compact-table th:nth-child(2), .compact-table td:nth-child(2) { display: none; }
+      .demo-reel { grid-template-columns: 1fr; gap: 14px; }
+      .before-after { grid-template-columns: 1fr; gap: 8px; }
+      .before-after .ba-arrow { transform: rotate(90deg); margin: 0 auto; }
     }
   </style>
   <script async src="../analytics.js"></script>
@@ -282,10 +333,53 @@
     guide, a rank-16 crayon LoRA as the style adapter, and latent consistency model sampling as a
     shortcut with fewer generation steps. The crayon LoRA was trained on 53 images. It passed the automatic
     score gates: CLIP style 25.2 and CLIP class 25.5. The visual grid became the real reference.
+    Here is what it is defending.
   </p>
 
+  <h2 id="aha">The Cat Comes Back In Crayon</h2>
+  <p class="dek">What good looks like</p>
+
+  <p>Kids love colorful art. I do too.</p>
+
+  <p>
+    A child draws a cat. Orange, rough, a few guessed-at whiskers. A few seconds after tapping,
+    it comes back in crayon: same cat, same rough shape, now with a cape. Still theirs.
+  </p>
+
+  <figure class="before-after" aria-label="A child's cat sketch and its crayon rendering">
+    <div class="ba-item">
+      <img src="cat-sketch.jpg" alt="A child's rough orange cat drawn on the app canvas: two ears, two eyes, whiskers.">
+      <span class="ba-label">The drawing</span>
+    </div>
+    <div class="ba-arrow" aria-hidden="true">&rarr;</div>
+    <div class="ba-item">
+      <img src="cat-crayon.jpg" alt="The same cat returned as a vivid crayon rendering with a cape.">
+      <span class="ba-label">A few seconds later</span>
+    </div>
+    <figcaption>One tap apart. The same cat, the same pose, rendered in wax crayon on the tablet.</figcaption>
+  </figure>
+
+  <p>It happens with an apple too.</p>
+
+  <figure class="demo-reel" aria-label="DoodleCraft live demos">
+    <video poster="demo-apple-poster.jpg" autoplay muted loop playsinline preload="metadata"
+           aria-label="A child sketches an apple in the app, then it returns rendered as crayon art.">
+      <source src="demo-apple.webm" type="video/webm">
+      <source src="demo-apple.mp4" type="video/mp4">
+    </video>
+    <video poster="demo-cat-poster.jpg" autoplay muted loop playsinline preload="metadata"
+           aria-label="A child sketches a cat in the app, then it returns rendered as crayon art.">
+      <source src="demo-cat.webm" type="video/webm">
+      <source src="demo-cat.mp4" type="video/mp4">
+    </video>
+    <figcaption>
+      Captured live in the app. Left, an apple. Right, the cat above. The same pipeline the report
+      evaluates: Stable Diffusion 1.5, ControlNet Scribble, and the rank-16 crayon LoRA.
+    </figcaption>
+  </figure>
+
   <h2>I. The Comparison</h2>
-  <p class="dek">Five strategies, one visual standard</p>
+  <p class="dek">Five strategies. Does the drawing still come back?</p>
 
   <table class="compact-table">
     <thead>
@@ -333,7 +427,7 @@
   <figure class="wide">
     <img src="strategy-grid.png" alt="DoodleCraft strategy grid comparing singular value decomposition, 4-bit quantization, 8-bit post-training quantization, quantization-aware training, and pipeline shape against a canonical v1 baseline column.">
     <figcaption>
-      Same sketches, same canonical v1 reference column. Candidate columns are rebuilt from the original
+      Same drawings, same canonical v1 reference column. Candidate columns are rebuilt from the original
       run artifacts and named to match the comparison table. 8-bit post-training quantization keeps the
       waxy crayon feel. Quantization-aware training softens into pastel. Singular value decomposition
       recovery becomes painterly. Pipeline shape matches the canonical v1 column directly.
