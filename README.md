@@ -25,44 +25,34 @@
   </a>
 </p>
 
-**Focus:** `AI Engineering` - `Agentic Systems` - `Data Engineering` - `Cloud Infrastructure` - `Backend Systems` - `Engineering Leadership`
+**Focus:** `LLM Applications` - `GenAI` - `Data Engineering` - `MLOps` - `Cloud Infrastructure` - `Engineering Leadership`
 
-Engineering at scale. I optimize data systems that handle billions of records, cut infrastructure costs, and actually last. Hands-on from product discovery, architecture, implementation to deployment.
+AI & Data Engineer. I build LLM workflows for real operations and the data platforms behind them. I use Amazon Bedrock and Claude to turn unstructured advertising-material instructions into structured data. The workflow automates 10% of a critical operational process.
 
-Engineering since 2011. Pipelines, EMR clusters, Airflow DAGs, and the unglamorous work of cutting cloud costs from the inside. I profile actual bottlenecks before changing anything, and prefer durable fixes over clever ones.
-
-Built teams too: grew my team at iPrice from 3 to 7 and mentored two engineers who were later promoted.
+Before that, I built data systems that handled 6B records at peak, saved $7K/month in infrastructure costs, and grew an engineering team from 3 to 7 before splitting it into two teams.
 
 AWS Certified Solutions Architect: Associate (July 2022).
 
 ### Numbers worth quoting
 
-**Backend at scale**
-- **20M+** monthly visitors served
-- **<250ms** API p95 latency
-- **4x** crawler throughput (60K -> 250K pages/hour)
-
 **Data engineering**
 - **6B** records at peak
-- **$6K+** monthly infrastructure savings (EMR $7K -> $3K, OpenSearch $2K -> self-hosted, reporting ~$1K)
-- **<8 h** data processing time
+- **$7K/month** infrastructure savings: EMR $7K -> $3K, Azure reporting $1K/month, and self-hosted Elasticsearch about $2K/month
+- **12 h -> <8 h** complex ETL processing
+- **60K -> 250K pages/hour** crawler throughput (4.17x)
 
 **Leadership**
-- Grew my team from **3 to 7**, with 2 engineers later promoted
+- Grew an engineering team from **3 to 7**, then split it into two teams; established KPIs and OKRs
 
 ### Case studies
 
 See [theanh.github.io](https://theanh.github.io) for the long versions.
 
-- **[SketchNet](https://theanh.github.io/sketchnet)**: convolutional neural network (CNN) for hand-drawn sketches. 95.1% accuracy, 938 KB model, 1ms inference. [Live demo](https://theanh.streamlit.app/sketchnet).
-- **[DIA Risk Screener](https://theanh.github.io/dia)**: five algorithms scoring the same molecule for drug-induced autoimmunity risk. The spread between their probabilities is the trust signal. 0.896 best test AUC (area under the ROC curve), 477 compounds. [Live demo](https://theanh.streamlit.app/drug-screener).
-- **[PCA Audio Toolkit](https://theanh.github.io/pca)**: Principal Component Analysis (PCA)-based audio denoising and lossy compression. [Live demo](https://theanh.streamlit.app/pca).
+- **[DoodleCraft](https://theanh.github.io/doodle-craft/)**: child-focused sketch-to-crayon generation with Stable Diffusion 1.5 and a rank-16 LoRA trained on 53 images.
+- **[SketchNet](https://theanh.github.io/sketchnet)**: convolutional neural network (CNN) for hand-drawn sketches. 95.08% test accuracy, 938 KB model, and 0.98 ms model-only CPU latency per sample. [Live demo](https://theanh.streamlit.app/sketchnet).
+- **[DIA Risk Screener](https://theanh.github.io/dia)**: five model families on 477 compounds. Model disagreement is an uncertainty signal; it is not a clinical decision tool. [Live demo](https://theanh.streamlit.app/drug-screener).
 - **Cutting Spark shuffle cost**: wide vs narrow transformations on billion-record EMR pipelines.
 
 ### Stack
 
-`Python` - `TypeScript` - `JavaScript` - `PHP` - `PyTorch` - `scikit-learn` - `XGBoost` - `LLM applications` - `AWS (Athena - EMR - S3 - SQS - ElastiCache - Lambda - RDS)` - `Azure Data Warehouse` - `Apache Airflow` - `PySpark` - `Elasticsearch` - `MySQL` - `PostgreSQL` - `SQL Server` - `Cassandra` - `Laravel` - `Symfony` - `RESTful API` - `GraphQL` - `Docker` - `Terraform` - `ELK Stack`
-
-Building AI applications now: LLM-powered automation in production, and learning ML by building (see SketchNet, DIA Risk Screener). Also travel and read.
-
-> "Great code is minimal to no code."
+`Python` - `TypeScript` - `JavaScript` - `PHP` - `Amazon Bedrock` - `Claude` - `PyTorch` - `scikit-learn` - `XGBoost` - `Apache Airflow` - `n8n` - `PySpark` - `Datadog` - `AWS` - `Elasticsearch` - `Docker` - `Terraform`

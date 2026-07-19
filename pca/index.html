@@ -33,7 +33,7 @@
       </svg>
       The Anh Nguyen
     </a>
-    <a href="https://theanh.streamlit.app/pca" target="_blank" rel="noopener">Try the live app -></a>
+    <a href="https://theanh.streamlit.app/pca-audio" target="_blank" rel="noopener">Try the live app -></a>
   </div>
 </header>
 
@@ -115,7 +115,7 @@
     </figcaption>
   </figure>
 
-  <h2>2. Why audio?</h2>
+  <h2>2. Audio as a matrix</h2>
   <p class="dek">Two ways to turn a waveform into a matrix</p>
 
   <p>
@@ -256,15 +256,15 @@
 
   <div class="tradeoffs">
     <div>
-      <h4 class="plus">Advantages vs MP3 / Opus</h4>
+      <h4 class="plus">What it buys against MP3 / Opus</h4>
       <ul>
         <li>No training, no learned codec.</li>
         <li>Deterministic; one knob (K) for size.</li>
-        <li>Drops higher frequencies first as a free side effect.</li>
+        <li>The retained rank is visible and inspectable.</li>
       </ul>
     </div>
     <div>
-      <h4 class="minus">Limitations vs MP3 / Opus</h4>
+      <h4 class="minus">Where it loses against MP3 / Opus</h4>
       <ul>
         <li>Worse perceptual quality at any matched ratio.</li>
         <li>Not streamable. PCA fits the whole signal at once.</li>
@@ -379,7 +379,7 @@
 
   <div class="tradeoffs">
     <div>
-      <h4 class="plus">Advantages vs Wiener / RNNoise (classical and ML denoisers)</h4>
+      <h4 class="plus">What it buys against Wiener / RNNoise</h4>
       <ul>
         <li>No training, no model dependencies.</li>
         <li>Interpretable; one variance-threshold knob.</li>
@@ -387,7 +387,7 @@
       </ul>
     </div>
     <div>
-      <h4 class="minus">Limitations vs Wiener / RNNoise (classical and ML denoisers)</h4>
+      <h4 class="minus">Where it loses against Wiener / RNNoise</h4>
       <ul>
         <li>Needs a quiet reference window in the recording.</li>
         <li>Magnitude-only, so phase keeps the noise.</li>
@@ -418,7 +418,7 @@
     <span>
       <a href="/"><- Back to portfolio</a>
       &nbsp;-&nbsp;
-      <a href="https://theanh.streamlit.app/pca" target="_blank" rel="noopener">Live app</a>
+      <a href="https://theanh.streamlit.app/pca-audio" target="_blank" rel="noopener">Live app</a>
       &nbsp;-&nbsp;
       <a href="https://github.com/theanh">GitHub</a>
     </span>
