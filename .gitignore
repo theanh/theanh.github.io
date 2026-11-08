@@ -10,3 +10,6 @@ node_modules
 package.json
 .gstack/
 .design-audit/
+
+# Owner-approved local-only skin-triage examples; no publication or image commits.
+/skin-triage/_private-pretraining/
